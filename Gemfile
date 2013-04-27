@@ -37,3 +37,6 @@ gem 'thin'
 
 # To use debugger
 # gem 'debugger'
+
+# Provide WebSockets in rails
+gem 'faye-rails'

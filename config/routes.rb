@@ -1,4 +1,8 @@
 WebCall::Application.routes.draw do
+  
+  # Initializes WebSocket
+  faye_server '/streaming', :timeout => 25
+  
   # The priority is based upon order of creation:
   # first created -> highest priority.
 
