@@ -5,7 +5,6 @@ class CreateMeetings < ActiveRecord::Migration
       t.integer :expectedDuration
       t.string :title
       t.string :description
-      t.boolean :isParticipating
 
       t.timestamps
     end

@@ -18,7 +18,6 @@ ActiveRecord::Schema.define(:version => 20130428143503) do
     t.integer  "expectedDuration"
     t.string   "title"
     t.string   "description"
-    t.boolean  "isParticipating"
     t.datetime "created_at",       :null => false
     t.datetime "updated_at",       :null => false
   end
