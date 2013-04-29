@@ -1,4 +1,5 @@
 class MeetingsController < ApplicationController
+  before_filter :performAuthentication
   # GET /meetings
   # GET /meetings.json
   def index
@@ -78,6 +79,24 @@ class MeetingsController < ApplicationController
     respond_to do |format|
       format.html { redirect_to meetings_url }
       format.json { head :no_content }
+    end
+  end
+
+  private
+
+  def performAuthentication
+    loggedin = false
+    authenticate
+  end
+
+  def authenticate
+    authenticate_or_request_with_http_basic do |username, password|
+      username = User.all(:conditions => {:username => username}).first
+      if username
+        username.password == password
+      else
+        false;
+      end
     end
   end
 end
