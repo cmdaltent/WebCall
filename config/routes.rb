@@ -1,5 +1,11 @@
 WebCall::Application.routes.draw do
   
+  resources :users
+
+
+  resources :meetings
+
+
   # Initializes WebSocket
   faye_server '/streaming', :timeout => 25
   
