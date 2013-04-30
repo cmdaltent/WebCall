@@ -1,5 +1,6 @@
 class MeetingsController < ApplicationController
-  before_filter :performAuthentication
+  #before_filter :performAuthentication
+  
   # GET /meetings
   # GET /meetings.json
   def index
@@ -85,7 +86,6 @@ class MeetingsController < ApplicationController
   private
 
   def performAuthentication
-    loggedin = false
     authenticate
   end
 
