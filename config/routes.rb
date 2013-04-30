@@ -1,5 +1,7 @@
 WebCall::Application.routes.draw do
   
+  root :to => 'meetings#index'
+
   resources :users
 
 
