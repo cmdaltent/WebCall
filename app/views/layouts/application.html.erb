@@ -3,12 +3,26 @@
 <head>
   <title>WebCall</title>
   <%= stylesheet_link_tag    "application", :media => "all" %>
-  <%= javascript_include_tag "assets/faye.js", "application" %>
+  <%= javascript_include_tag "faye.js", "application" %>
   <%= csrf_meta_tags %>
 </head>
 <body>
-
-<%= yield %>
-
+	<div class="navbar navbar-fixed-top clearfix">
+		<div class="navbar-inner">
+			<div class="container">
+			<a class="brand" href="/">WebCall</a>
+			<ul class="nav">
+				<li><%= link_to 'Meetings', meetings_path %></li>
+				<li><%= link_to 'Users', users_path %></li>
+			</ul>
+			</div>
+		</div>
+	</div>
+	<div class="container">
+		<div class="page-header">
+			<h1>WebCall <small>The ultimate WebVideoConferencingTool.</small></h1>
+		</div>
+		<%= yield %>
+	</div>
 </body>
 </html>
