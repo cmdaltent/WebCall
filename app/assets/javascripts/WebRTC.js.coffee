@@ -21,6 +21,7 @@ class Channel
     @constructor.Client.subscribe @channel, (data) => @_onmessage data
     
   publish: (data) ->
+    console.log @channel, 'C->S', data
     @constructor.Client.publish @channel, data
     
   subscribe: (fn) ->
@@ -34,7 +35,86 @@ class Channel
     undefined
       
   _onmessage: (data) ->
+    console.log @channel, 'S->C', data
     @_listeners.forEach (fn) ->
       fn data
     
 @Channel = Channel
+
+
+channel = null;
+started = null;
+connection = null;
+
+createControlChannel = () ->
+  channel = new Channel '/meetings/'+meetingId+'/stream-control'
+  channel.subscribe (message) => 
+    processChannelMessages message
+  return channel
+
+processChannelMessages = (message) ->
+  switch message.type
+    when 'offer'
+      if !started 
+        openConnection()
+      connection.setRemoteDescription new RTCSessionDescription message
+      connection.createAnswer (sessionDescription) ->
+        connection.setLocalDescription sessionDescription
+        channel.publish sessionDescription
+    when "answer"
+      connection.setRemoteDescription new RTCSessionDescription message
+    when "candidate"
+      connection.addIceCandidate new RTCIceCandidate {
+        sdpMLineIndex: message.label,
+        candidate: message.candidate
+      }
+  undefined
+
+connection = new RTCPeerConnection {
+  iceServers: [{
+    url: 'stun:stun.l.google.com:19302'
+  }]
+}
+
+connection.onicecandidate = (event) =>
+  if event.candidate
+    channel.publish {
+      type: 'candidate',
+      label: event.candidate.spdMLineIndex,
+      id: event.candidate.sdpMid,
+      candidate: event.candidate.candidate
+    }
+  undefined
+
+connection.onaddstream = (event) =>
+  console.log event
+
+openConnection = () ->
+  started = true
+  connection.createOffer (sessionDescription) =>
+    connection.setLocalDescription sessionDescription
+    channel.publish sessionDescription
+
+onUserMediaSuccess = (stream) ->
+  connection.addStream stream
+  attachMediaStream $('#my-stream')[0], stream;
+  openConnection()
+
+$(->
+  try 
+    if meetingId
+      channel = createControlChannel()
+      navigator.getUserMedia {
+        video: true,
+        audio: true,
+      },
+      onUserMediaSuccess,
+      (e) ->
+        console.log(e)
+        undefined
+      undefined
+  catch error
+    undefined
+  finally
+    undefined  
+)
