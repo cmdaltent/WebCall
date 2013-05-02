@@ -10,10 +10,20 @@ Messages/data can be published via channel.publish.
 All Faye internals are handled in this class, even a singleton-like client connection 
 to the server is available as Channel.Client (in this case Channel must not be an 
 instance variable - it's a class variable. 
-###
+### 
 
 class Channel
   @Client = new Faye.Client window.location.protocol + '//' + window.location.host + '/streaming' if not @Client?
+  @Client.addExtension {
+    incoming: (message, callback) ->
+      if Channel.Client._0? and message.clientId is Channel.Client._0 and message.channel.indexOf 'meta' is -1
+        undefined
+      else
+        callback message
+      
+    outgoing: (message, callback) ->
+      callback message
+  }
   
   constructor: (@channel) ->
     if @channel[0] isnt '/'
@@ -21,6 +31,7 @@ class Channel
     @constructor.Client.subscribe @channel, (data) => @_onmessage data
     
   publish: (data) ->
+    console.debug @channel, 'C->S', data
     @constructor.Client.publish @channel, data
     
   subscribe: (fn) ->
@@ -34,7 +45,94 @@ class Channel
     undefined
       
   _onmessage: (data) ->
+    console.debug @channel, 'S->C', data
     @_listeners.forEach (fn) ->
       fn data
     
 @Channel = Channel
+
+
+channel = null;
+started = null;
+connection = null;
+
+createControlChannel = () ->
+  channel = new Channel '/meetings/'+meetingId+'/stream-control'
+  channel.subscribe (message) => 
+    processChannelMessages message
+  return channel
+
+processChannelMessages = (message) ->
+  switch message.type
+    when 'offer'
+      console.log 'offer'
+      if !started 
+        openConnection()
+      connection.setRemoteDescription new RTCSessionDescription message
+      connection.createAnswer (sessionDescription) ->
+        connection.setLocalDescription sessionDescription
+        channel.publish sessionDescription
+    when "answer"
+      console.log 'answer'
+      connection.setRemoteDescription new RTCSessionDescription message
+    when "candidate"
+      connection.addIceCandidate new RTCIceCandidate {
+        sdpMLineIndex: message.label,
+        candidate: message.candidate
+      }
+  undefined
+
+connection = new RTCPeerConnection {
+  iceServers: [{
+    url: 'stun:23.21.150.121'
+  }]
+}
+
+connection.onicecandidate = (event) =>
+  if event.candidate
+    channel.publish {
+      type: 'candidate',
+      label: event.candidate.spdMLineIndex,
+      id: event.candidate.sdpMid,
+      candidate: event.candidate.candidate
+    }
+  else
+    console.log 'End of candidates.'
+  undefined
+
+connection.onaddstream = (event) =>
+  console.log event
+  attachMediaStream $('#remote-stream')[0], event.stream
+  
+connection.onremovestream = () =>
+  attachMediaStream $('#remote-stream')[0], undefined
+
+openConnection = () ->
+  started = true
+  connection.createOffer (sessionDescription) =>
+    connection.setLocalDescription sessionDescription
+    channel.publish sessionDescription
+
+onUserMediaSuccess = (stream) ->
+  connection.addStream stream
+  attachMediaStream $('#my-stream')[0], stream;
+  openConnection()
+
+$(->
+  try 
+    if meetingId
+      channel = createControlChannel()
+      navigator.getUserMedia {
+        video: true,
+        audio: true,
+      },
+      onUserMediaSuccess,
+      (e) ->
+        console.log(e)
+        undefined
+      undefined
+  catch error
+    undefined
+  finally
+    undefined  
+)
