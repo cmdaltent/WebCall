@@ -1,5 +1,7 @@
 class User < ActiveRecord::Base
   attr_accessible :email, :firstName, :lastName, :password, :username
+  
+  has_and_belongs_to_many :meetings
 
   validates :email, :presence => true,
   :length => {:minimum => 4},
