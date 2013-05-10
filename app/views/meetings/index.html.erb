@@ -1,0 +1,30 @@
+<h2>Upcoming events<small><%= link_to 'New Meeting', new_meeting_path, :class => 'btn pull-right' %></small></h2>
+
+<table class="table table-striped">
+<thead>
+  <tr>
+    <th>Title</th>
+    <th>Description</th>
+    <th>Start</th>
+    <th>Expected Duration</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+</thead>
+<tbody>
+<% @meetings.each do |meeting| %>
+  <tr>
+    <td><%= meeting.title %></td>
+    <td><%= meeting.description %></td>
+    <td><%= meeting.startDate %></td>
+    <td><%= meeting.expectedDuration %></td>
+    <td><%= link_to 'Join', meeting, :class => 'btn btn-primary' %></td>
+    <td><%= link_to 'Edit', edit_meeting_path(meeting), :class => 'btn' %></td>
+    <td><%= link_to 'Destroy', meeting, method: :delete, data: { confirm: 'Are you sure?' }, :class => 'btn btn-delete' %></td>
+  </tr>
+<% end %>
+</tbody>
+</table>
+
+<br />

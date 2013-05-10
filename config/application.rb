@@ -58,5 +58,8 @@ module WebCall
 
     # Version of your assets, change this if you want to expire all your assets
     config.assets.version = '1.0'
+    
+    # Required for faye
+    config.threadsafe!
   end
 end
