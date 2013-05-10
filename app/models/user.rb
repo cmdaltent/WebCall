@@ -24,8 +24,8 @@ class User < ActiveRecord::Base
   validates :email, presence: true, 
                 format: {with: VALID_EMAIL_REGEX },
                 uniqueness: { case_sensitive: false },
-                :length => {:minimum => 4},
-                      
+                :length => {:minimum => 4}
+                  
 
 
 end
