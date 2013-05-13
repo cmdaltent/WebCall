@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130506191504) do
+ActiveRecord::Schema.define(:version => 20130513122736) do
 
   create_table "meetings", :force => true do |t|
     t.integer  "startDate"
@@ -35,6 +35,9 @@ ActiveRecord::Schema.define(:version => 20130506191504) do
     t.string   "email"
     t.datetime "created_at",      :null => false
     t.datetime "updated_at",      :null => false
+    t.string   "token"
   end
+
+  add_index "users", ["token"], :name => "index_users_on_token"
 
 end

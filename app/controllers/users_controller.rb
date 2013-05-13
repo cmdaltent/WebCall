@@ -43,7 +43,7 @@ class UsersController < ApplicationController
 
     if @user.save
         sign_in @user
-        flash[:success] = "Have a nice web_rtc_travelling!"
+        flash[:success] = "Have a nice web_call_travelling!"
         redirect_to @user
       else
         render 'new'

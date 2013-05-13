@@ -1,12 +1,17 @@
 WebCall::Application.routes.draw do
   
   
-  root :to => 'meetings#index'
+  root :to => 'users#index'
 
   resources :users
+  resources :sessions, only: [:new, :create, :destroy]
 
 
   resources :meetings
+  
+  match '/signin', to: 'sessions#new'
+  match '/signup', to: 'users#new'
+
   
 
   # Initializes WebSocket
