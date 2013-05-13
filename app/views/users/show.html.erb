@@ -1,30 +1,19 @@
 <% provide(:title, @user.username) %>
-<p id="notice"><%= notice %></p>
 
-<p>
-  <b>Firstname:</b>
-  <%= @user.firstName %>
-</p>
 
-<p>
-  <b>Lastname:</b>
-  <%= @user.lastName %>
-</p>
-
-<p>
-  <b>Username:</b>
-  <%= @user.username %>
-</p>
-
-<p>
-  <b>Password:</b>
-  <%= @user.password %>
-</p>
-
-<p>
-  <b>Email:</b>
-  <%= @user.email %>
-</p>
+<dl class="dl-horizontal">
+	<dt>Firstname:</dt>
+	<dd><%= @user.firstName %></dd>
+	
+	<dt>Lastname:</dt>
+	<dd><%= @user.lastName %></dd>
+	
+	<dt>Username:</dd>
+  	<dd><%= @user.username %></dt>
+  		
+	<dt>Email:</dt>
+  	<dd><a href="mailto:#"><%= @user.email %></a></dd>
+</dl>
 
 
 <%= link_to 'Edit', edit_user_path(@user) %> |

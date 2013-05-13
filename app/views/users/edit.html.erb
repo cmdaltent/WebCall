@@ -1,6 +1,35 @@
+<% provide(:title,"Edit User")%>
 <h1>Editing user</h1>
 
-<%= render 'form' %>
+<%= render 'shared/error_messages' %>
+<div class="row">
+	<div class="span6 offset3"></div>
+	<%= f.label :firstName %><br />
+    <%= f.text_field :firstName %>
+    
+    <%= f.label :lastName %><br />
+    <%= f.text_field :lastName %>
+    
+    <%= f.label :username %><br />
+    <%= f.text_field :username %>
+    
+    <%= f.label :password %><br />
+    <%= f.text_field :password %>
+    
+    <%= f.label :email %><br />
+    <%= f.text_field :email %>
+    
+    
+</div>
+
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>
+
+
+
+
 
 <%= link_to 'Show', @user %> |
 <%= link_to 'Back', users_path %>

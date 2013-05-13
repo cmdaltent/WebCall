@@ -4,6 +4,7 @@ class User < ActiveRecord::Base
   has_and_belongs_to_many :meetings
   
   before_save { |user| user.email = email.downcase }
+  before_save :create_token
 
 
     
@@ -25,7 +26,12 @@ class User < ActiveRecord::Base
                 format: {with: VALID_EMAIL_REGEX },
                 uniqueness: { case_sensitive: false },
                 :length => {:minimum => 4}
-                  
+              
+              
+private
+  def create_token
+    self.token = SecureRandom.uuid
+  end
 
 
 end
