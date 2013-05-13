@@ -11,6 +11,7 @@ WebCall::Application.routes.draw do
   
   match '/signin', to: 'sessions#new'
   match '/signup', to: 'users#new'
+  match '/signout', to: 'sessions#destroy', via: :delete
 
   
 
