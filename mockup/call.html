@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>WebCall-Meeting</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Webcall-Meeting">
+    <meta name="author" content="">
+
+    <!-- styles -->
+    <link href="bootstrap.css" rel="stylesheet">
+	
+
+<style>
+.navbar-inner {
+  background: #FFFFFF
+}
+a:hover {
+    background-color: #FFFFFF;
+    color: #000000;
+    text-decoration: none;
+}
+#leiste {
+	 Background-color: #80FFFF;
+	 width:100%;
+	 height:100%;
+	 padding:5px;
+	 	 
+ }
+ #pad {
+ padding:50px;
+ }
+  #pad2 {
+ padding:20px;
+ }
+</style>
+
+    <!-- fav and touch icons -->
+    <link rel="shortcut icon" href="twitter-bootstrap-v2/docs/examples/images/favicon.ico">
+    <link rel="apple-touch-icon" href="twitter-bootstrap-v2/docs/examples/images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="twitter-bootstrap-v2/docs/examples/images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="twitter-bootstrap-v2/docs/examples/images/apple-touch-icon-114x114.png">
+  </head>
+  <body>
+	  
+  
+        <div class="container">
+         <div class="row">
+			 <div class="span9" style="padding: 20px">WebCall-Meeting
+			 </div>
+			 <div class="span2" style="padding: 2px; float:right"><img src="img/Citrix2.jpg" alt="citrix">
+			 </div>
+        </div>
+			 <div class="container">
+                 <!--style="border-width: 6px;  border-color:#ff9900; border-style: solid"-->
+				<div id=leiste >
+                            <div class="row">
+			 <div class="span9">Name Uhrzeit
+			 </div>
+			 <div class="span2" style="float:right"><a href="login.html">Log Out</a>
+			 </div>
+        </div>
+				</div>
+			 </div>
+		</div>
+		
+
+
+        <div class="container">
+            <div style="padding: 10px 0px 0px 0px">
+			<div class="span8">
+				<div class="row">
+			<div class="span1">
+			<div id="user1" onclick=$('#main').html($('#video_user1').html())>
+			 <p>user1</p>
+			 <div id="video_user1">
+       		 <img src="img/user1.jpeg">
+       		 </div>
+       		</div>
+		  </div>
+          <div class="span1">
+        	<div id="user2" onclick=$('#main').html($('#video_user2').html())>
+				<p>user2</p>
+				<div id="video_user2"><img src="img/user2.jpeg"></div>
+			</div>
+		  </div>
+		  <div class="span1">
+        	<div id="user3" onclick=$('#main').html($('#video_user3').html())>
+				<p>user3</p>
+				<div id="video_user3"><img src="img/user3.jpeg">
+				</div>
+			</div>
+		  </div>
+		  <div class="span1">
+        	<div id="user4" onclick=$('#main').html($('#video_user4').html())>
+				<p>user4</p>
+				<div id="video_user4"><img src="img/user4.jpeg">
+				</div>
+			</div>
+		  </div>
+		  <div class="span1">
+        	<div id="user5" onclick=$('#main').html($('#video_user5').html())>
+				<p>user5</p>
+			<div id="video_user5"><img src="img/user5.jpeg">
+			</div>
+			</div>
+			</div>
+		  </div>
+
+           
+              <div id="main" align="center" style="padding:10px" ></div>
+            
+			</div>
+          <div class="span3" style="border:1px;border-color:#000000;border-style:solid">
+         <div class="accordion" id="accordion2" style="margin:0px;padding:0px">  
+          <div class="accordion-group">  
+           <div class="accordion-heading">  
+            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#chat" style="color:#000000">  
+            Chat  
+            </a>  
+           </div>  
+           <div id="chat" class="accordion-body collapse" style="height: 0px; ">  
+			<div style="width:100px; height:100px">
+			The Chat Div
+			</div>
+            </div>  
+           </div>  
+          </div>
+          
+          <div class="accordion-group">  
+           <div class="accordion-heading">  
+            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#participant" style="color:#000000">  
+            Participant  
+            </a>  
+           </div>  
+           <div id="participant" class="accordion-body collapse" style="height: 0px; ">  
+            <div class="menu-style-chat" style="padding: 0px 0px 0px 20px">
+                   User 1
+            </div>
+                        <div class="menu-style-chat" style="padding: 0px 0px 0px 20px">
+                   User 2
+            </div>
+                        <div class="menu-style-chat" style="padding: 0px 0px 0px 20px">
+                   User 3
+            </div>
+                        <div class="menu-style-chat" style="padding: 0px 0px 0px 20px">
+                   User 4
+            </div>
+                        <div class="menu-style-chat" style="padding: 0px 0px 0px 20px">
+                   User 5
+            </div>
+      
+ 
+            </div>  
+           </div>  
+          
+             <div class="row"><div id=hand class="span3" style="padding: 8px 15px" onclick="test()">Raise Hand</div></div>  
+       </div>
+        </div>
+ </div>
+       
+       <div class="container-fluid">
+
+		  
+          <hr>
+     <footer>
+        <p>&copy; KP 2013</p>
+      </footer>
+
+    </div><!--/.fluid-container-->
+    
+    <script type="text/javascript" src="jquery.js"></script>  
+    <script type="text/javascript" src="bootstrap-collapse.js"></script> 
+
+
+  </body>
+</html>
