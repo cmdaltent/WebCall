@@ -1,21 +1,7 @@
 class User < ActiveRecord::Base
-  attr_accessible :email, :firstName, :lastName, :password, :username
+  attr_accessible :e_mail, :first_name, :last_name, :token, :username
   
-  has_many :organizers, :dependent => true
-  has_many :meetings, :through => :organizers
-
-  validates :email, :presence => true,
-  :length => {:minimum => 4},
-  :uniqueness => true
-
-  validates :firstName, :presence => true
-  validates :lastName, :presence => true
-
-  validates :password, :presence => true,
-  :length => {:in => 4..10}
-
-  validates :username, :presence => true,
-  :length => {:minimum => 3},
-  :uniqueness => true
-
+  # Meetings referenced here where scheduled by the User
+  # The User is the organizer of the referenced meetings here
+  has_many :meetings, :dependent => destroy
 end

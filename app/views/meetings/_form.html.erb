@@ -1,7 +1,7 @@
 <%= form_for(@meeting) do |f| %>
   <% if @meeting.errors.any? %>
-    <div id="error_explanation" class="alert alert-error alert-block">
-      <strong><%= pluralize(@meeting.errors.count, "error") %> prohibited this meeting from being saved:</strong>
+    <div id="error_explanation">
+      <h2><%= pluralize(@meeting.errors.count, "error") %> prohibited this meeting from being saved:</h2>
 
       <ul>
       <% @meeting.errors.full_messages.each do |msg| %>
@@ -12,20 +12,24 @@
   <% end %>
 
   <div class="field">
-    <%= f.label :startDate %><br />
-    <%= f.number_field :startDate %>
-  </div>
-  <div class="field">
-    <%= f.label :expectedDuration %><br />
-    <%= f.number_field :expectedDuration %>
-  </div>
-  <div class="field">
     <%= f.label :title %><br />
     <%= f.text_field :title %>
   </div>
   <div class="field">
+    <%= f.label :startDate %><br />
+    <%= f.text_field :startDate %>
+  </div>
+  <div class="field">
+    <%= f.label :expectedDuration %><br />
+    <%= f.text_field :expectedDuration %>
+  </div>
+  <div class="field">
     <%= f.label :description %><br />
     <%= f.text_field :description %>
+  </div>
+  <div class="field">
+    <%= f.label :private %><br />
+    <%= f.check_box :private %>
   </div>
   <div class="actions">
     <%= f.submit %>

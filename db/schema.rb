@@ -11,36 +11,6 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130517053651) do
-
-  create_table "meetings", :force => true do |t|
-    t.integer  "startDate"
-    t.integer  "expectedDuration"
-    t.string   "title"
-    t.string   "description"
-    t.datetime "created_at",       :null => false
-    t.datetime "updated_at",       :null => false
-  end
-
-  create_table "meetings_users", :id => false, :force => true do |t|
-    t.integer "meeting_id"
-    t.integer "user_id"
-  end
-
-  create_table "organizers", :force => true do |t|
-    t.integer "meeting_id",                      :null => false
-    t.integer "user_id",                         :null => false
-    t.boolean "is_organizer", :default => false
-  end
-
-  create_table "users", :force => true do |t|
-    t.string   "firstName"
-    t.string   "lastName"
-    t.string   "username"
-    t.string   "password"
-    t.string   "email"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
-  end
+ActiveRecord::Schema.define(:version => 0) do
 
 end
