@@ -1,7 +1,9 @@
 class Meeting < ActiveRecord::Base
   attr_accessible :description, :expectedDuration, :startDate, :title
   
-  has_and_belongs_to_many :users
+  has_many :organizers, :dependent => true
+  has_many :users, :through => :organizers
+  
   
   validates :title, :presence => true,
                     :length => { :minimum => 1}
