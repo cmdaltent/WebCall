@@ -1,6 +1,7 @@
+<% provide(:title, "Users List") %>
 <h1>Listing users</h1>
-
-<table>
+<br class="bar" />
+<table class="table table-hover">
   <tr>
     <th>First name</th>
     <th>Last name</th>
@@ -18,14 +19,12 @@
     <td><%= user.last_name %></td>
     <td><%= user.e_mail %></td>
     <td><%= user.username %></td>
+    <td><%= user.email %></td>
     <td><%= user.token %></td>
-    <td><%= link_to 'Show', user %></td>
-    <td><%= link_to 'Edit', edit_user_path(user) %></td>
-    <td><%= link_to 'Destroy', user, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+    <td><button class="btn"><%= link_to 'Show', user%></button>
+    	<button class="btn"><%= link_to 'Edit', edit_user_path(user) %></button>
+    	<button class="btn"><%= link_to 'Destroy', user, method: :delete, data: { confirm: 'Are you sure?' } %></button>
+    </td>
   </tr>
 <% end %>
 </table>
-
-<br />
-
-<%= link_to 'New User', new_user_path %>
