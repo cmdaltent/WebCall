@@ -2,12 +2,12 @@ class CreateMeetings < ActiveRecord::Migration
   def change
     create_table :meetings do |t|
       t.string :title
-      t.long :startDate
-      t.long :expectedDuration
+      t.integer :startDate
+      t.integer :expectedDuration
       t.string :description
       t.boolean :private
       t.string :token
-      t.reference :user
+      t.references :user
 
       t.timestamps
     end
