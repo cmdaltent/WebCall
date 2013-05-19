@@ -18,7 +18,7 @@ module SessionsHelper
   
   def signout
     self.current_user = nil
-    cookies.delete[:token]
+    cookies.delete(:token)
   end
   
 end
