@@ -1,6 +1,10 @@
 class UsersController < ApplicationController
   # GET /users
   # GET /users.json
+  
+  before_filter :is_signed_in, only: [:edit, :update, :index,:show,:destroy]
+  before_filter :is_correct_user, only: [:edit, :update,:destroy]
+  
   def index
     @users = User.all
 
@@ -58,6 +62,7 @@ class UsersController < ApplicationController
     respond_to do |format|
       if @user.update_attributes(params[:user])
         format.html { redirect_to @user, notice: 'User was successfully updated.' }
+        sign_in @user
         format.json { head :no_content }
       else
         format.html { render action: "edit" }
@@ -71,10 +76,24 @@ class UsersController < ApplicationController
   def destroy
     @user = User.find(params[:id])
     @user.destroy
-
+    flash[:success] = "Success destroyed."
     respond_to do |format|
       format.html { redirect_to users_url }
       format.json { head :no_content }
     end
   end
+  
+  private
+  
+  def is_signed_in
+    unless signin?
+      redirect_to signin_path, notice: "Please sign in." 
+    end
+  end
+  
+  def is_correct_user
+      @user = User.find(params[:id])
+      redirect_to users_path, notice:"You cann't do this for others." unless current_user ==(@user)
+  end
+  
 end
