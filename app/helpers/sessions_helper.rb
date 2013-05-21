@@ -16,6 +16,10 @@ module SessionsHelper
     !current_user.nil?
   end
   
+  def create_token(token)
+    token = SecureRandom.uuid
+  end
+  
   def signout
     self.current_user = nil
     cookies.delete(:token)
