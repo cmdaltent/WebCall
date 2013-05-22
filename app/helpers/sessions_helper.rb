@@ -1,6 +1,7 @@
 module SessionsHelper
   def sign_in(user)
-    cookies.permanent[:token] = user.token
+    #cookies.permanent[:token] = [name:user.username,psw:user.password]
+    cookies[:id] = user.id
     self.current_user = user
   end
   
@@ -9,20 +10,17 @@ module SessionsHelper
   end
   
   def current_user
-    @current_user ||=User.find_by_token(cookies[:token])
+    @current_user ||=User.find_by_id(cookies[:id])
   end
   
   def signin?
     !current_user.nil?
   end
   
-  def create_token(token)
-    token = SecureRandom.uuid
-  end
-  
   def signout
     self.current_user = nil
-    cookies.delete(:token)
+    #cookies.delete(:token)
+    cookies.delete(:id)
   end
   
 end
