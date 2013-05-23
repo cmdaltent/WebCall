@@ -2,7 +2,7 @@ class MeetingsController < ApplicationController
   # GET /meetings
   # GET /meetings.json
   def index
-    @meetings = Meeting.all
+    @meetings = Meeting.where(:private => false)
 
     respond_to do |format|
       format.html # index.html.erb
