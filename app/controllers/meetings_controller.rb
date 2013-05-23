@@ -1,4 +1,7 @@
 class MeetingsController < ApplicationController
+   
+  before_filter :is_signed_in, only: [:edit, :update,:index,:show,:destroy]
+ 
   # GET /meetings
   # GET /meetings.json
   def index
@@ -80,4 +83,13 @@ class MeetingsController < ApplicationController
       format.json { head :no_content }
     end
   end
+  
+  private
+  
+  def is_signed_in
+    unless signin?
+      redirect_to signin_path, notice:"Please sign in." 
+    end
+  end
+  
 end
