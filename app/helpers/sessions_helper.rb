@@ -17,6 +17,14 @@ module SessionsHelper
     !current_user.nil?
   end
   
+  def signedin?
+    if signin?
+      #check cookies
+    else
+      #
+    end
+  end
+  
   def signout
     self.current_user = nil
     #cookies.delete(:token)

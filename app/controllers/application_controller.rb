@@ -5,8 +5,10 @@ class ApplicationController < ActionController::Base
   private 
   
   def check_session
-    #flash[:success]="Session Checked"
-    #if the session is empty or dosen't equal to the current_user, sign out and redirect to the signin pages. 
+    unless signedin?
+      flash[:success]="Session is checked here."
+      #redirect_to signin_path
+    end
   end
   
 end
