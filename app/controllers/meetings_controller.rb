@@ -26,7 +26,7 @@ class MeetingsController < ApplicationController
 
     respond_to do |format|
       format.html # index.html.erb
-      format.json { render json: @meetings }
+      format.json { render json: {:status => "200 OK", :count => @meetings.length, :results => @meetings} }
     end
   end
 
@@ -37,7 +37,7 @@ class MeetingsController < ApplicationController
 
     respond_to do |format|
       format.html # show.html.erb
-      format.json { render json: @meeting }
+      format.json { render json: {:status => "200 OK", :result => @meeting} }
     end
   end
 
