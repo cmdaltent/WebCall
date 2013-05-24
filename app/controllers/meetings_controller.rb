@@ -5,7 +5,24 @@ class MeetingsController < ApplicationController
   # GET /meetings
   # GET /meetings.json
   def index
-    @meetings = Meeting.where(:private => false)
+    current_time = get_current_time_since_unix
+    defaults = {:onlyUpcoming => "true", :meOrganizing => "false", :maxCount => Meeting.all.length, :fromDate => current_time}
+    defaults.merge!(params.symbolize_keys)
+        
+    if defaults[:onlyUpcoming].to_s == "true" && defaults[:fromDate].to_i > current_time
+      current_time = defaults[:fromDate].to_i
+    end
+    if defaults[:onlyUpcoming].to_s == "false"
+      if defaults[:fromDate].to_i != current_time
+        current_time = defaults[:fromDate].to_i
+        puts "Test"
+      else
+        current_time = 0
+      end
+    end
+        
+    @meetings = Meeting.select("id, startDate, expectedDuration,user_id,title,description").where("private = :private AND startDate >= :start",
+      {:private => false, :start => current_time}).limit(defaults[:maxCount].to_i)
 
     respond_to do |format|
       format.html # index.html.erb
@@ -90,6 +107,10 @@ class MeetingsController < ApplicationController
     unless signin?
       redirect_to signin_path, notice:"Please sign in." 
     end
+  end
+  
+  def get_current_time_since_unix
+    DateTime.current.to_i
   end
   
 end
