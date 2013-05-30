@@ -1,10 +1,11 @@
 class UsersController < ApplicationController
-  # GET /users
-  # GET /users.json
+
   
   before_filter :authenticated_user, only: [:index,:show]
   before_filter :authorized_user, only: [:edit, :update,:destroy]
   
+  # GET /users
+  # GET /users.json
   def index
     @users = User.all
 
@@ -18,7 +19,7 @@ class UsersController < ApplicationController
   # GET /users/1.json
   def show
     @user = User.find(params[:id])
-
+    @user_meetings = @user.meetings #show all meetings of current_user
     respond_to do |format|
       format.html # show.html.erb
       format.json { render json: @user }
@@ -106,11 +107,10 @@ class UsersController < ApplicationController
   end
   
   private
-   
+  
   def authorized_user
-      # puts "User id:" + params[:id].to_s + "======\n"
-      @user = User.find(params[:id])
-      redirect_to users_path,notice:"You cann't eidt Info of others." unless current_user == @user
+      user = User.find(params[:id])
+      redirect_to users_path,notice:"You cann't eidt Info of others." unless current_user == user
   end
   
 end

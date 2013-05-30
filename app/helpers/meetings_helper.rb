@@ -1,8 +1,9 @@
 module MeetingsHelper
   
   def inMeeting?
-    @userid = User.find_by_id(cookies[:id]).id
-    if Meeting.find_by_user_id(@userid) != nil
+    # user = User.find_by_id(cookies[:token])
+    # if Meeting.find_by_user_id(@userid) != nil
+    if !current_user.meetings.empty?
       return true
     else
       return false

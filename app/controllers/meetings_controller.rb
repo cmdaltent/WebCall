@@ -24,7 +24,7 @@ class MeetingsController < ApplicationController
 
     @meetings = Meeting.select("id, startDate, expectedDuration,user_id,title,description").where("private = :private AND startDate >= :start",
       {:private => false, :start => current_time}).limit(defaults[:maxCount].to_i)
-    @meetings = Meeting.all
+    # @meetings = Meeting.all
     respond_to do |format|
       format.html # index.html.erb
       format.json { render json: {:status => "200 OK", :count => @meetings.length, :results => @meetings} }
@@ -46,7 +46,6 @@ class MeetingsController < ApplicationController
   # GET /meetings/new.json
   def new
     @meeting = Meeting.new
-
     respond_to do |format|
       format.html # new.html.erb
       format.json { render json: @meeting }
@@ -61,8 +60,8 @@ class MeetingsController < ApplicationController
   # POST /meetings
   # POST /meetings.json
   def create
-    @meeting = Meeting.new(params[:meeting])
-
+    # @meeting = Meeting.new(params[:meeting])
+    @meeting = current_user.meetings.build(params[:meeting])
     respond_to do |format|
       if @meeting.save
         format.html { redirect_to @meeting, notice: 'Meeting was successfully created.' }
@@ -106,9 +105,8 @@ class MeetingsController < ApplicationController
   
   def authorized_meeting
     if !params[:id].nil?
-      @meeting = Meeting.find(params[:id])
-      puts "\n\n\n\n\nMeeting Private: "+ @meeting.private + "====\n"
-      redirect_to meetings_path unless @meeting.private 
+      meeting = Meeting.find(params[:id])
+      redirect_to meetings_path unless meeting.private 
     end
   end
   
@@ -123,10 +121,10 @@ class MeetingsController < ApplicationController
   
   def authorized_users
     if !params[:id].nil?
-      # puts "\n\n\n\n\nMeeting ID: "+ params[:id].to_s + "====\n"
-      @meeting = Meeting.find(params[:id])
-      @user = User.find(@meeting.user_id)
-      redirect_to meetings_path, notice: "No premission" unless current_user == @user
+      # meetings = Meeting.find(params[:id])
+      # user = User.find(meetings.user_id)
+      user = current_user.meetings.find_by_id(params[:id])
+      redirect_to meetings_path, notice: "No premission" unless !user.nil?
     end
   end
 
