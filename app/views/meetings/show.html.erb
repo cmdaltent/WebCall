@@ -1,30 +1,14 @@
-<p id="notice"><%= notice %></p>
+<script type="text/javascript">var meetingId = <%= @meeting.id %>;</script>
+<h2><%= @meeting.title %></h2>
 
-<p>
-  <b>Title:</b>
-  <%= @meeting.title %>
-</p>
-
-<p>
-  <b>Startdate:</b>
-  <%= @meeting.startDate %>
-</p>
-
-<p>
-  <b>Expectedduration:</b>
-  <%= @meeting.expectedDuration %>
-</p>
-
-<p>
-  <b>Description:</b>
-  <%= @meeting.description %>
-</p>
-
-<p>
-  <b>Private:</b>
-  <%= @meeting.private %>
-</p>
-
+<div class="container">
+	<div class="row">
+		<div class="span12"><video id="my-stream" autoplay="autoplay" width="100%" height="100%"></video></div>
+	</div>
+	<div class="row">
+		<div class="span2" id="remote-streams-bar"></div>
+	</div>
+</div>
 
 <%= link_to 'Edit', edit_meeting_path(@meeting) %> |
 <%= link_to 'Back', meetings_path %>
