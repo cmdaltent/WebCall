@@ -134,6 +134,9 @@ class WebRTC
     connection = new RTCPeerConnection
       iceServers: [{
         url: 'stun:23.21.150.121'
+      }, {
+        url: 'turn:uni-webcall-webrtc%40markus-wutzler.de@numb.viagenie.ca',
+        credential: 'WebC4LL!WebRTC',
       }]
     
     #connection.onstatechange = () =>
