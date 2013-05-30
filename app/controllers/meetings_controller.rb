@@ -1,14 +1,15 @@
 class MeetingsController < ApplicationController
-   
-  before_filter :is_signed_in, only: [:edit, :update,:index,:show,:destroy]
- 
+
+  before_filter :authenticated_user, only: [:index,:new]
+  before_filter :authorized_users, only:[:index,:show,:edit,:update,:destroy]
+  
   # GET /meetings
   # GET /meetings.json
   def index
     current_time = get_current_time_since_unix
     defaults = {:onlyUpcoming => "true", :meOrganizing => "false", :maxCount => Meeting.all.length, :fromDate => current_time}
     defaults.merge!(params.symbolize_keys)
-        
+
     if defaults[:onlyUpcoming].to_s == "true" && defaults[:fromDate].to_i > current_time
       current_time = defaults[:fromDate].to_i
     end
@@ -17,13 +18,13 @@ class MeetingsController < ApplicationController
         current_time = defaults[:fromDate].to_i
         puts "Test"
       else
-        current_time = 0
+      current_time = 0
       end
     end
-        
+
     @meetings = Meeting.select("id, startDate, expectedDuration,user_id,title,description").where("private = :private AND startDate >= :start",
       {:private => false, :start => current_time}).limit(defaults[:maxCount].to_i)
-
+    # @meetings = Meeting.all
     respond_to do |format|
       format.html # index.html.erb
       format.json { render json: {:status => "200 OK", :count => @meetings.length, :results => @meetings} }
@@ -45,7 +46,6 @@ class MeetingsController < ApplicationController
   # GET /meetings/new.json
   def new
     @meeting = Meeting.new
-
     respond_to do |format|
       format.html # new.html.erb
       format.json { render json: @meeting }
@@ -60,8 +60,8 @@ class MeetingsController < ApplicationController
   # POST /meetings
   # POST /meetings.json
   def create
-    @meeting = Meeting.new(params[:meeting])
-
+    # @meeting = Meeting.new(params[:meeting])
+    @meeting = current_user.meetings.build(params[:meeting])
     respond_to do |format|
       if @meeting.save
         format.html { redirect_to @meeting, notice: 'Meeting was successfully created.' }
@@ -92,7 +92,7 @@ class MeetingsController < ApplicationController
   # DELETE /meetings/1
   # DELETE /meetings/1.json
   def destroy
-    @meeting = Meeting.find(params[:id])
+    @meeting = Meeting.find(params(:id))
     @meeting.destroy
 
     respond_to do |format|
@@ -100,17 +100,36 @@ class MeetingsController < ApplicationController
       format.json { head :no_content }
     end
   end
-  
+
   private
   
-  def is_signed_in
-    unless signin?
-      redirect_to signin_path, notice:"Please sign in." 
+  def authorized_meeting
+    if !params[:id].nil?
+      meeting = Meeting.find(params[:id])
+      redirect_to meetings_path unless meeting.private 
     end
   end
   
+#   
+  # def current_meeting=(meeting)
+    # @current_meeting = meeting
+  # end
+#   
+  # def current_user
+    # @current_meeting ||=Meeting.find(params[:id])
+  # end
+  
+  def authorized_users
+    if !params[:id].nil?
+      # meetings = Meeting.find(params[:id])
+      # user = User.find(meetings.user_id)
+      user = current_user.meetings.find_by_id(params[:id])
+      redirect_to meetings_path, notice: "No premission" unless !user.nil?
+    end
+  end
+
   def get_current_time_since_unix
     DateTime.current.to_i
   end
-  
+
 end
