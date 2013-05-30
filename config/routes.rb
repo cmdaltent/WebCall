@@ -5,9 +5,8 @@ WebCall::Application.routes.draw do
 
   resources :users
   resources :sessions, only: [:new, :create, :destroy]
-
-
-  resources :meetings
+  
+  resources :meetings, only: [:new, :edit, :update,:index,:show,:destroy,:create,:meetings]
   
   match '/signin', to: 'sessions#new'
   match '/signup', to: 'users#new'

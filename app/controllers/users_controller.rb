@@ -2,8 +2,8 @@ class UsersController < ApplicationController
   # GET /users
   # GET /users.json
   
-  before_filter :is_signed_in, only: [:edit, :update, :index,:show,:destroy]
-  before_filter :is_correct_user, only: [:edit, :update,:destroy]
+  before_filter :authenticated_user, only: [:index,:show]
+  before_filter :authorized_user, only: [:edit, :update,:destroy]
   
   def index
     @users = User.all
@@ -19,20 +19,20 @@ class UsersController < ApplicationController
   def show
     @user = User.find(params[:id])
 
-    #respond_to do |format|
-     # format.html # show.html.erb
-      #format.json { render json: @user }
-    #end
+    respond_to do |format|
+      format.html # show.html.erb
+      format.json { render json: @user }
+    end
   end
 
   # GET /users/new
   # GET /users/new.json
   def new
     @user = User.new
-    #respond_to do |format|
-     # format.html # new.html.erb
-     # format.json { render json: @user }
-    #end
+    respond_to do |format|
+      format.html # new.html.erb
+      format.json { render json: @user }
+    end
   end
 
   # GET /users/1/edit
@@ -40,6 +40,28 @@ class UsersController < ApplicationController
     @user = User.find(params[:id])
   end
 
+  def create(name,pass,pass_confirm)
+    @user = User.new do |f|
+      f.username = name
+      f.password = pass
+      f.password_confirmation = pass_confirm
+      f.save
+    end
+  end
+  
+  
+  def is_authenticated_user(login_email,login_pass )
+    transaction do
+      User.find(:first,:condition => ["name=? and password=?",login_email,login_pass])
+    end
+  end
+  
+  def get_pwdsalt(login_name)
+    transaction do
+       User.find(:first,:conditions=>["name=?",login_email]).password_confirmation
+    end
+  end
+  
   # POST /users
   # POST /users.json
   def create
@@ -84,16 +106,11 @@ class UsersController < ApplicationController
   end
   
   private
-  
-  def is_signed_in
-    unless signin?
-      redirect_to signin_path, notice: "Please sign in." 
-    end
-  end
-  
-  def is_correct_user
+   
+  def authorized_user
+      # puts "User id:" + params[:id].to_s + "======\n"
       @user = User.find(params[:id])
-      redirect_to users_path, notice:"You cann't do this for others." unless current_user ==(@user)
+      redirect_to users_path,notice:"You cann't eidt Info of others." unless current_user == @user
   end
   
 end

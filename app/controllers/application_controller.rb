@@ -1,13 +1,16 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery
-  include SessionsHelper
-  before_filter :check_session
-  private 
+  before_filter :authenticated_user,only:[:home]
   
-  def check_session
-    unless signedin?
-      flash[:success]="Session is checked here."
-      #redirect_to signin_path
+  def home
+  end
+  
+  include SessionsHelper
+  
+  private
+    def authenticated_user
+    unless signin?
+      redirect_to signin_path,notice: "Please sign in." 
     end
   end
   

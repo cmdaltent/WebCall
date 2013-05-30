@@ -1,5 +1,5 @@
 class Meeting < ActiveRecord::Base
-  attr_accessible :description, :expectedDuration, :private, :startDate, :title, :token
+  attr_accessible :description, :expectedDuration, :private, :startDate, :title, :token, :user_id
   
   # The User referenced here is the organizer
   belongs_to :user

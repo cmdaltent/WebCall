@@ -1,12 +1,12 @@
 module MeetingsHelper
   
-  def meeting_of_user
+  def inMeeting?
     @userid = User.find_by_id(cookies[:id]).id
-    @meetingid ||= Meeting.find_by_user_id(@userid)
-  end
-  
-  def is_meetings_user?
-    !meetingid.nil?
+    if Meeting.find_by_user_id(@userid) != nil
+      return true
+    else
+      return false
+    end
   end
   
 end
