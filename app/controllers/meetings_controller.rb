@@ -7,7 +7,7 @@ class MeetingsController < ApplicationController
   # GET /meetings.json
   def index
     current_time = get_current_time_since_unix
-    defaults = {:onlyUpcoming => "true", :meOrganizing => "false", :maxCount => Meeting.all.length, :fromDate => current_time}
+    defaults = {:onlyUpcoming => "true", :meOrganizing => "false", :maxCount => Meeting.all.length, :fromDate => current_time, :privateOnly => "false"}
     defaults.merge!(params.symbolize_keys)
 
     if defaults[:onlyUpcoming].to_s == "true" && defaults[:fromDate].to_i > current_time
@@ -22,7 +22,7 @@ class MeetingsController < ApplicationController
     end
 
     @meetings = Meeting.select("id, startDate, expectedDuration,user_id,title,description").where("private = :private AND startDate >= :start",
-      {:private => false, :start => current_time}).limit(defaults[:maxCount].to_i)
+      {:private => defaults[:privateOnly].to_s.to_bool, :start => current_time}).limit(defaults[:maxCount].to_i)
     respond_to do |format|
       format.html # index.html.erb
       format.json { render json: {:status => "200 OK", :count => @meetings.length, :results => @meetings} }
