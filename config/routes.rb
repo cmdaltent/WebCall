@@ -12,7 +12,7 @@ WebCall::Application.routes.draw do
   match '/signup', to: 'users#new'
   match '/signout', to: 'sessions#destroy', via: :delete
 
-  
+  match 'meetings/conferences/:token', to: 'meetings#join', as: :conference
 
   # Initializes WebSocket
   faye_server '/streaming', :timeout => 25
