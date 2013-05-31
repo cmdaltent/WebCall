@@ -100,7 +100,7 @@ class MeetingsController < ApplicationController
 
   def join
     @meeting = Meeting.where("token = ?", params[:token]).last
-    puts @meeting
+
     respond_to do |format|
       format.html # join.html.erb
     end
