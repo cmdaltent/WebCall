@@ -16,15 +16,13 @@ class MeetingsController < ApplicationController
     if defaults[:onlyUpcoming].to_s == "false"
       if defaults[:fromDate].to_i != current_time
         current_time = defaults[:fromDate].to_i
-        puts "Test"
       else
-      current_time = 0
+        current_time = 0
       end
     end
 
     @meetings = Meeting.select("id, startDate, expectedDuration,user_id,title,description").where("private = :private AND startDate >= :start",
       {:private => false, :start => current_time}).limit(defaults[:maxCount].to_i)
-    # @meetings = Meeting.all
     respond_to do |format|
       format.html # index.html.erb
       format.json { render json: {:status => "200 OK", :count => @meetings.length, :results => @meetings} }
@@ -60,7 +58,6 @@ class MeetingsController < ApplicationController
   # POST /meetings
   # POST /meetings.json
   def create
-    # @meeting = Meeting.new(params[:meeting])
     @meeting = current_user.meetings.build(params[:meeting])
     respond_to do |format|
       if @meeting.save
@@ -110,19 +107,8 @@ class MeetingsController < ApplicationController
     end
   end
   
-#   
-  # def current_meeting=(meeting)
-    # @current_meeting = meeting
-  # end
-#   
-  # def current_user
-    # @current_meeting ||=Meeting.find(params[:id])
-  # end
-  
   def authorized_users
     if !params[:id].nil?
-      # meetings = Meeting.find(params[:id])
-      # user = User.find(meetings.user_id)
       user = current_user.meetings.find_by_id(params[:id])
       redirect_to meetings_path, notice: "No premission" unless !user.nil?
     end
