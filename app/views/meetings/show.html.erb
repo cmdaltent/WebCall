@@ -1,3 +1,4 @@
+<% @emails = String.new %>
 <p id="notice"><%= notice %></p>
 
 <p>
@@ -28,6 +29,14 @@
 <p>
 	<b>Token:</b>
 	<%= @meeting.token%>
+</p>
+
+<p>
+	<b>Notify via e-mail:</b>
+	<%= form_tag notify_url(@meeting), :method => :post do %>
+		<%= text_field(:email, :recipients)%>
+		<%= submit_tag "Notify" %>
+	<% end %>
 </p>
 
 <%= link_to 'Join', conference_url(@meeting.token) %> |

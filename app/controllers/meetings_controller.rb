@@ -1,3 +1,5 @@
+require 'uri'
+
 class MeetingsController < ApplicationController
 
   before_filter :authenticated_user, only: [:index,:new]
@@ -104,6 +106,12 @@ class MeetingsController < ApplicationController
     respond_to do |format|
       format.html # join.html.erb
     end
+  end
+  
+  def notify
+    recipients = params[:email][:recipients]
+    EmailNotification.meeting_notification(recipients, Meeting.find(params[:id])).deliver
+    redirect_to Meeting.find(params[:id])
   end
 
   private
