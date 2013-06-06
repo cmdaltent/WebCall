@@ -1,5 +1,80 @@
 <script type="text/javascript">var meetingId = <%= @meeting.id %>;</script>
 <h2><%= @meeting.title %></h2>
+ 
+ <div class="container">
+	<div class="row">
+	<div class="span8">
+	<div class="span2">
+	<div id="video_user_1" style="padding: 20px 20px 20px 20px"><img src="/img/user2.jpeg" alt="placeholder"></div>
+	</div><div class="span2">
+	<div id="video_user_2" style="padding: 20px 20px 20px 20px"><img src="/img/user2.jpeg" alt="placeholder"></div>
+	</div><div class="span2">
+	<div id="video_user_3" style="padding: 20px 20px 20px 20px"><img src="/img/user2.jpeg" alt="placeholder"></div>
+	</div><div class="span2">
+	<div id="video_user_4" style="padding: 20px 20px 20px 20px"><img src="/img/user2.jpeg" alt="placeholder"></div>
+	</div><div class="span2">
+	<div id="video_user_5" style="padding: 20px 20px 20px 20px"><img src="/img/user2.jpeg" alt="placeholder"></div>
+	</div>
+	
+	
+	</div>
+	
+ 
+ 
+ 
+ 
+ <!--chat box start-->
+  <div class="span3" style="border:1px;border-color:#000000;border-style:solid">
+         <div class="accordion" id="chatBox" style="margin:0px;padding:0px">  
+          <div class="accordion-group">  
+           <div class="accordion-heading">  
+            <a class="accordion-toggle" data-toggle="collapse" data-parent="#chatBox" href="#chat">  
+            Chat  
+            </a>  
+           </div>  
+           <div id="chat" class="accordion-body collapse" style="height: 0px; ">  
+			<div id="chatDiv" style="width:100px; height:100px">
+			The Chat Div
+			</div>
+            </div>  
+           </div>  
+          </div>
+          
+          <div class="accordion-group">  
+           <div class="accordion-heading">  
+            <a class="accordion-toggle" data-toggle="collapse" data-parent="#chatBox" href="#participant">  
+            Participant  
+            </a>  
+           </div>  
+           <div id="participant" class="accordion-body collapse" style="height: 0px; ">  
+            <div class="menu-style-chat" style="padding: 0px 0px 0px 20px">
+                   User 1
+            </div>
+                        <div class="menu-style-chat" style="padding: 0px 0px 0px 20px">
+                   User 2
+            </div>
+                        <div class="menu-style-chat" style="padding: 0px 0px 0px 20px">
+                   User 3
+            </div>
+                        <div class="menu-style-chat" style="padding: 0px 0px 0px 20px">
+                   User 4
+            </div>
+                        <div class="menu-style-chat" style="padding: 0px 0px 0px 20px">
+                   User 5
+            </div>
+      
+ 
+            </div>  
+           </div>  
+          
+             <div class="row"><div id=hand class="span3" style="padding: 8px 15px" onclick="test()">Raise Hand</div></div>  
+       </div>
+        </div>
+<!--chat box end-->
+</div>
+<%= link_to 'Back', meetings_path %>
+<!--Original Code-->
+<!--
 
 <div class="container">
 	<div class="row">
@@ -11,3 +86,4 @@
 </div>
 
 <%= link_to 'Back', meetings_path %>
+-->
