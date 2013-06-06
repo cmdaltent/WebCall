@@ -20,8 +20,16 @@
     <%= user.label :email %><br />
     <%= user.text_field :email %>
     
+    
     </div>
+    
 </div> 
-<button class="btn"><%= user.submit %></button>
+<div class="row">
+	<div class="span6 offset3">
+	<%= user.submit "Update User", class: "btn btn-primary" %>
+ 
+    </div>
+    
+</div>
 <% end %>
 

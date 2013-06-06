@@ -1,4 +1,16 @@
-	<div class="navbar navbar-fixed-top clearfix">
+	        <div class="container">
+	        <div class="masthead">
+         <div class="row">
+			 <div class="span9" style="padding: 20px"><h3 class="muted">WebCall-Meeting</h3>
+			 </div>
+			 <div class="span2" style="padding: 2px; float:right"><img src="/images/Citrix2.jpg" alt="citrix">
+			 </div>
+        </div>
+
+		</div>
+
+	
+	<div class="navbar">
 		<div class="navbar-inner">
 			<div class="container">
 			<nav>
@@ -6,33 +18,30 @@
 				
 				
 				<% if signin? %>
-				
-					<li><%= link_to 'Home', '/' %></li>
-					
-					<li><%= link_to 'Meetings', meetings_path %></li>
-					
-					<li><%= link_to 'Users', users_path %></li>
-					
 					<li id="fat-menu" class="dropdown">
-              			<a href="#" class="dropdown-toggle" data-toggle="dropdown">Account <b class="caret"></b></a>
+              			<a href="#" class="dropdown-toggle" data-toggle="dropdown">Meetinglist <b class="caret"></b></a>
               			<ul class="dropdown-menu">
               				
-                			<li><%= link_to "Profile", current_user %></li>
+                			<li><%= link_to "All Meetings", meetings_path %></li>
                 			
-                			<li><%= link_to "Settings", edit_user_path(current_user) %></li>
+                			<li><%= link_to "Private Meetings", meetings_path(:privateOnly => "true" )  %></li>
                 			
-                			<li class="divider"></li>
-                			
-                			<li><%= link_to "Sign out", signout_path, method: "delete" %></li>
+         
               			</ul>
+
+					
+					<li><%= link_to 'Schedule Meeting', new_meeting_path %></li>
+					
+					<li><%= link_to 'Account Information', current_user %></li>
+					
+					<li><%= link_to "Log Out", signout_path, method: "delete" %></li>
 				<% else %>
 				
-				<li><%= link_to 'Home', root_path %></li>
-				
-				<li><%= link_to 'Sign in', root_path %></li>
+
 				<% end %>
 			</ul>
 			</nav>
 			</div>
+		</div>
 		</div>
 	</div>
