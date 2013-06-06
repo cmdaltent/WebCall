@@ -14,10 +14,11 @@
 		<div class="navbar-inner">
 			<div class="container">
 			<nav>
-			<ul class="nav pull-left">
+			
 				
 				
 				<% if signin? %>
+				<ul class="nav pull-left">
 					<li id="fat-menu" class="dropdown">
               			<a href="#" class="dropdown-toggle" data-toggle="dropdown">Meetinglist <b class="caret"></b></a>
               			<ul class="dropdown-menu">
@@ -34,12 +35,16 @@
 					
 					<li><%= link_to 'Account Information', current_user %></li>
 					
-					<li><%= link_to "Log Out", signout_path, method: "delete" %></li>
+					<li>
+					</ul>
+					<p class="navbar-text pull-right">
+					<%= link_to "Log Out", signout_path, method: "delete" %>
+					</p></li>
 				<% else %>
 				
 
 				<% end %>
-			</ul>
+			
 			</nav>
 			</div>
 		</div>
