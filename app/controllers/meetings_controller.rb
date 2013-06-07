@@ -25,6 +25,15 @@ class MeetingsController < ApplicationController
 
     @meetings = Meeting.where("private = :private AND startDate >= :start",
       {:private => defaults[:privateOnly].to_s.to_bool, :start => current_time}).limit(defaults[:maxCount].to_i)
+    if defaults[:privateOnly].to_s.to_bool
+      tmp_meetings = Array.new
+      @meetings.each {|meeting| 
+        if meeting.user.token == current_user.token
+          tmp_meetings.push(meeting)
+        end
+      }
+      @meetings = tmp_meetings
+    end
     respond_to do |format|
       format.html # index.html.erb
       format.json { render json: {:status => "200 OK", :count => @meetings.length, :results => @meetings} }
@@ -125,8 +134,10 @@ class MeetingsController < ApplicationController
   
   def authorized_users
     if !params[:id].nil?
-      user = current_user.meetings.find_by_id(params[:id])
-      redirect_to meetings_path, notice: "No premission" unless !user.nil?
+      if Meeting.find(params[:id]).private == true
+        user = current_user.meetings.find_by_id(params[:id])
+        redirect_to meetings_path, notice: "No premission" unless !user.nil?
+      end
     end
   end
 
