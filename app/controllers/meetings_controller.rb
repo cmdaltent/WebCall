@@ -23,7 +23,7 @@ class MeetingsController < ApplicationController
       end
     end
 
-    @meetings = Meeting.select("id, startDate, expectedDuration,user_id,title,description").where("private = :private AND startDate >= :start",
+    @meetings = Meeting.where("private = :private AND startDate >= :start",
       {:private => defaults[:privateOnly].to_s.to_bool, :start => current_time}).limit(defaults[:maxCount].to_i)
     respond_to do |format|
       format.html # index.html.erb
