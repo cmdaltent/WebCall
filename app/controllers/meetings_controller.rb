@@ -4,7 +4,6 @@ class MeetingsController < ApplicationController
 
   before_filter :authenticated_user, only: [:index,:new]
   before_filter :authorized_users, only:[:index,:show,:edit,:update,:destroy]
-  
   # GET /meetings
   # GET /meetings.json
   def index
@@ -19,20 +18,14 @@ class MeetingsController < ApplicationController
       if defaults[:fromDate].to_i != current_time
         current_time = defaults[:fromDate].to_i
       else
-        current_time = 0
+      current_time = 0
       end
     end
 
     @meetings = Meeting.where("private = :private AND startDate >= :start",
       {:private => defaults[:privateOnly].to_s.to_bool, :start => current_time}).limit(defaults[:maxCount].to_i)
     if defaults[:privateOnly].to_s.to_bool
-      tmp_meetings = Array.new
-      @meetings.each {|meeting| 
-        if meeting.user.token == current_user.token
-          tmp_meetings.push(meeting)
-        end
-      }
-      @meetings = tmp_meetings
+      @meetings = private_meetings_current_user(@meetings)
     end
     respond_to do |format|
       format.html # index.html.erb
@@ -116,7 +109,7 @@ class MeetingsController < ApplicationController
       format.html # join.html.erb
     end
   end
-  
+
   def notify
     recipients = params[:email][:recipients]
     EmailNotification.meeting_notification(recipients, Meeting.find(params[:id])).deliver
@@ -124,14 +117,14 @@ class MeetingsController < ApplicationController
   end
 
   private
-  
+
   def authorized_meeting
     if !params[:id].nil?
       meeting = Meeting.find(params[:id])
-      redirect_to meetings_path unless meeting.private 
+      redirect_to meetings_path unless meeting.private
     end
   end
-  
+
   def authorized_users
     if !params[:id].nil?
       if Meeting.find(params[:id]).private == true
@@ -145,4 +138,13 @@ class MeetingsController < ApplicationController
     DateTime.current.to_i
   end
 
+  def private_meetings_currentUser(meetings)
+    tmp_meetings = Array.new
+    meetings.each {|meeting|
+      if meeting.user.token == current_user.token
+      tmp_meetings.push(meeting)
+      end
+    }
+    return tmp_meetings
+  end
 end
