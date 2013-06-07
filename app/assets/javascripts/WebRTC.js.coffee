@@ -235,7 +235,7 @@ class WebRTC
       
     connection.onremovestream = () =>
       console.log event
-      @_onRemoteStreamAdded connection.guid
+      @_onRemoteStreamRemoved connection.guid
 #      attachMediaStream $('#remote-stream')[0], undefined
     
     return connection
@@ -261,11 +261,9 @@ class WebRTC
     console.error error
 
   _onRemoteStreamAdded: (guid, stream) ->
-    el = (document.createElement('video'))
-    el.id = guid
-    attachMediaStream el, stream
-    $(el).attr 'autoplay', 'autoplay'
-    $('#remote-streams-bar').append $ el
+    el = $('#remote-stream-tmp').clone().attr('id',guid)
+    attachMediaStream el[0], stream
+    $('#streams').append($(el))
     undefined
 
   _onRemoteStreamRemoved: (guid) ->
