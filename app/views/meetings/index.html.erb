@@ -31,7 +31,7 @@
 	
 		<div class="row-fluid">
 			<div class="span2">
-				<%= meeting.title %>
+				<%= link_to meeting.title, conference_url(meeting.token) %>
 			</div>
 			<div class="span2">
 				<%= meeting.description %>
