@@ -6,14 +6,13 @@ class Meeting < ActiveRecord::Base
   
   
   before_save :create_token
-  #before_save :check_meeting_time?
   
   VALID_INTEGER_REGEX = /^[1-9]\d*$/
   
-  validate :check_meeting_time?
   validates :expectedDuration, :presence => true,:numericality => true
-  
   validates :startDate,:presence => true, :numericality => true
+
+  validate :check_meeting_time?
   
   validates :title, :presence => true, :length => {:minimum => 4}
   
@@ -24,6 +23,12 @@ class Meeting < ActiveRecord::Base
   end
   
   def check_meeting_time?
+    if self.startDate == nil
+      return false
+    end
+    if self.expectedDuration == nil
+      return false
+    end
     if !(self.startDate > Time.new.to_i)
       errors.add(:startDate,"can't strat from this time,is greater than #{Time.now.to_i}.")
     end
