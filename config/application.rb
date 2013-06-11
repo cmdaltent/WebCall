@@ -59,6 +59,12 @@ module WebCall
     # Version of your assets, change this if you want to expire all your assets
     config.assets.version = '1.0'
     
+    # Configure Rails Asynchronous Request Processing
+    # config.middleware.use Rack::FiberPool
+    
+    # Custom directories with classes and modules you want to be autoloadable.
+    config.autoload_paths += %W(#{config.root}/lib)
+    
     # Required for faye
     config.threadsafe!
   end

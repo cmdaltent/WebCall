@@ -27,7 +27,7 @@ $('#chat_room').hide();
 		</fieldset>
 	</div>
 
-	<div class="content">
+	<!-- <div class="content">
 		<div class="row">
 			<div class="span9">
 				<%= yield %>
@@ -46,12 +46,12 @@ $('#chat_room').hide();
 				</div>
 			</div>
 		</div>
-	</div><!--/row-->
-</div><!--/content-->
+	</div>
+</div> -->
 
 <%= javascript_tag do %>
 jQuery(function() {
 window.chatController = new Chat.Controller("<%= request.host %>:<%= request.port %>/websocket",true);
-})
+alert(windeow.chatController);})
 <% end %>
 </div>
