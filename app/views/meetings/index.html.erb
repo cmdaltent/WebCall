@@ -41,11 +41,11 @@
 			<div class="span2">
 				<%= meeting.expectedDuration %></div>
 			<div class="span1">
-				<%= link_to 'Show', meeting %></div>
+				<%= link_to 'Show', meeting, class: "btn"  %></div>
 			<div class="span1">
-				<%= link_to 'Edit', edit_meeting_path(meeting) %></div>
+				<%= link_to 'Edit', edit_meeting_path(meeting), class: "btn" %></div>
 			<div class="span1">
-				<%= link_to 'Destroy', meeting, method: :delete, data: { confirm: 'Are you sure?' } %></div>
+				<%= link_to 'Join', conference_url(meeting.token), class: "btn" %></div> 
 			</div>
 <% end %>
 		</div>
