@@ -13,7 +13,7 @@ instance variable - it's a class variable.
 ### 
 
 
-class Utils
+class @Utils
   S4 = ()->
       (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1)
   
@@ -49,6 +49,9 @@ class Channel
     
   disconnect: () ->
     @constructor.Client.disconnect()
+  
+  getClientId: () ->
+    __ClientID__
 
   _onmessage: (data) ->
     unless data['__SENDER__'] is __ClientID__
@@ -132,10 +135,15 @@ class WebRTC
     return sdpLines;
   }`
   
-  constructor: (@meetingId, @whoami = {name: '', token: Utils.GUID()})->
+  constructor: (@meetingId, name = 'Guest ('+Utils.GUID().split('-')[0]+')', userToken = Utils.GUID())->
     @connections = {}
     @localStream
     @channel = new Channel '/meetings/' + @meetingId + '/stream-control'
+    @whoami =
+      name: name
+      identifier: userToken + '_' + @channel.getClientId()
+      userToken: userToken
+      clientId: @channel.getClientId()
     @channel.subscribe (message) =>
       @processChannelMessages message
     window.addEventListener 'beforeunload', () =>
@@ -155,17 +163,17 @@ class WebRTC
           @_offerReceived(message.participant, message.sessionDescription)
         when 'answer'
           console.log 'answer'
-          @connections[message.participant.token].setRemoteDescription new RTCSessionDescription message.sessionDescription
+          @connections[message.participant.identifier].setRemoteDescription new RTCSessionDescription message.sessionDescription
         when 'candidate'
-          @connections[message.participant.token].addIceCandidate new RTCIceCandidate
+          @connections[message.participant.identifier].addIceCandidate new RTCIceCandidate
             sdpMLineIndex: message.label,
             candidate: message.candidate
         when 'GoodBye!'
           @_handleGoodBye message.participant
     
   _createAndSendOffer: (participant) ->
-    connection = @connections[participant.token] = @_createConnection() 
-    connection.guid = participant.token
+    connection = @connections[participant.identifier] = @_createConnection() 
+    connection.guid = participant.identifier
     if @localStream? then connection.addStream @localStream
     connection.createOffer (sessionDescription) =>
       sessionDescription.sdp = preferOpus sessionDescription.sdp 
@@ -176,8 +184,8 @@ class WebRTC
         sessionDescription: sessionDescription      
     
   _offerReceived: (participant, remoteSessionDescription) ->
-    connection = @connections[participant.token] = @_createConnection()
-    connection.guid = participant.token
+    connection = @connections[participant.identifier] = @_createConnection()
+    connection.guid = participant.identifier
     if @localStream? then connection.addStream @localStream
     connection.setRemoteDescription new RTCSessionDescription remoteSessionDescription
     connection.createAnswer (sessionDescription) =>
@@ -198,8 +206,9 @@ class WebRTC
     undefined
         
   _handleGoodBye: (participant) ->
-    @connections[participant.token].close()
-    delete @connections[participant.token]
+    @connections[participant.identifier].close()
+    @_onRemoteStreamRemoved participant.identifier
+    delete @connections[participant.identifier]
 
   _createConnection: ->
     connection = new RTCPeerConnection
@@ -240,14 +249,14 @@ class WebRTC
     
     return connection
     
-  getUserMedia: ->
+  getUserMedia: (video = true, audio = true)->
     navigator.getUserMedia {
-      audio: true,
-      video: true,
+      audio: audio,
+      video: video,
     }, (stream) => 
       @_onUserMediaSuccess stream
     , (e) => 
-      @_onUserMediaError e
+      @_onUserMediaError e, video, audio
   
   _onUserMediaSuccess: (stream) ->
     @localStream = stream
@@ -257,7 +266,10 @@ class WebRTC
       participant: @whoami
     undefined
     
-  _onUserMediaError: (error) ->
+  _onUserMediaError: (error, video, audio) ->
+    if error.code is 2 and video is true
+      console.error "No Video available"
+      @getUserMedia(false)
     console.error error
 
   _onRemoteStreamAdded: (guid, stream) ->
@@ -274,10 +286,10 @@ class WebRTC
 
 $(->
   try 
-    window.meeting = new WebRTC(meetingId)
-    window.meeting.getUserMedia()
+    window.meeting = new WebRTC(meetingToken, userName, userToken)
   catch error
-    console.log error
+    console.log(error)
   finally
+    window.meeting?.getUserMedia()
     undefined  
 )
