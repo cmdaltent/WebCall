@@ -29,8 +29,8 @@ class Meeting < ActiveRecord::Base
     if self.expectedDuration == nil
       return false
     end
-    if !(self.startDate > Time.new.to_i)
-      errors.add(:startDate,"can't strat from this time,is greater than #{Time.now.to_i}.")
+    if !(self.startDate > DateTime.now)
+      errors.add(:startDate,"can't start from this time,is greater than #{DateTime.now}.")
     end
     if !(self.expectedDuration > 0)
       errors.add(:expectedDuration,"is a invalid duration time,#{Time.at(self.expectedDuration)}.")

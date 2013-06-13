@@ -11,11 +11,11 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130518150627) do
+ActiveRecord::Schema.define(:version => 20130613133433) do
 
   create_table "meetings", :force => true do |t|
     t.string   "title"
-    t.integer  "startDate"
+    t.datetime "startDate"
     t.integer  "expectedDuration"
     t.string   "description"
     t.boolean  "private"
