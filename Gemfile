@@ -42,3 +42,8 @@ gem 'thin'
 
 # Provide WebSockets in rails
 gem 'faye-rails'
+
+#Needed for datepicker
+group :assets do
+  gem 'jquery-ui-rails' # jquery ui
+end
