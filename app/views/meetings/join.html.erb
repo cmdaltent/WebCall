@@ -1,19 +1,23 @@
-<script type="text/javascript">var meetingId = "<%= @meeting.token %>";</script>
+<script type="text/javascript">
+  var meetingToken =  "<%= @meeting.token %>";
+  var userToken = <%= current_user ? "\"".html_safe+current_user.token+"\"".html_safe : "null" %>;
+  var userName = <%= current_user ? "\"".html_safe+current_user.username+"\"".html_safe : "null" %>;
+</script>
 <h2><%= @meeting.title %></h2>
 
 <div class="container">
 	<div class="row">
 		<div class="span8" id="streams">
-			<video autoplay="autoplay" id="my-stream" class="span2 stream my-stream"/>
-			<video autoplay="autoplay" id="remote-stream-tmp" class="span2 stream remote-stream"/>
+			<video autoplay="autoplay" id="my-stream" class="span4 stream my-stream"/>
+			<video autoplay="autoplay" id="remote-stream-tmp" class="span4 stream remote-stream"/>
 		</div>
 
 		<!--chat box start-->
-		<div class="span3" style="border:1px;border-color:#000000;border-style:solid">
-			<div class="accordion" id="chatBox" style="margin:0px;padding:0px">
+		<div class="span3 offset1" style="border:0px;border-color:#000000;border-style:solid">
+			<div class="accordion" id="controlBox" style="margin:0px;padding:0px">
 				<div class="accordion-group">
 					<div class="accordion-heading">
-						<a class="accordion-toggle" data-toggle="collapse" data-parent="#chatBox" href="#chat"> Chat </a>
+						<a class="accordion-toggle" data-toggle="collapse" data-parent="#controlBox" href="#chat"> Chat </a>
 					</div>
 					<div id="chat" class="accordion-body collapse" style="height: 0px; ">
 						<div id="chatDiv" style="width:100px; height:100px">
@@ -25,25 +29,14 @@
 
 			<div class="accordion-group">
 				<div class="accordion-heading">
-					<a class="accordion-toggle" data-toggle="collapse" data-parent="#chatBox" href="#participant"> Participant </a>
+					<a class="accordion-toggle" data-toggle="collapse" data-parent="#controlBox" href="#participant-list"> Participants </a>
 				</div>
-				<div id="participant" class="accordion-body collapse" style="height: 0px; ">
-					<div class="menu-style-chat" style="padding: 0px 0px 0px 20px">
-						User 1
+				<div id="participant-list" class="accordion-body collapse" style="height: 0px; ">
+					<div class="accordion-inner">
+  					<div class="participant-list-user me" style="padding: 0px 0px 0px 20px">
+  						<span class="user-name"><%= current_user ? current_user.username : "Me" %></span>
+  					</div>
 					</div>
-					<div class="menu-style-chat" style="padding: 0px 0px 0px 20px">
-						User 2
-					</div>
-					<div class="menu-style-chat" style="padding: 0px 0px 0px 20px">
-						User 3
-					</div>
-					<div class="menu-style-chat" style="padding: 0px 0px 0px 20px">
-						User 4
-					</div>
-					<div class="menu-style-chat" style="padding: 0px 0px 0px 20px">
-						User 5
-					</div>
-
 				</div>
 			</div>
 
