@@ -138,7 +138,7 @@ class MeetingsController < ApplicationController
     DateTime.current.to_i
   end
 
-  def private_meetings_currentUser(meetings)
+  def private_meetings_current_user(meetings)
     tmp_meetings = Array.new
     meetings.each {|meeting|
       if meeting.user.token == current_user.token
