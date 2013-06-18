@@ -8,7 +8,7 @@ gem 'rails', '3.2.13'
 gem 'sqlite3'
 gem 'figaro'
 gem 'bcrypt-ruby', '3.0.1'
-
+gem 'websocket-rails'
 
 # Gems used only for assets and not required
 # in production environments by default.
@@ -42,3 +42,8 @@ gem 'thin'
 
 # Provide WebSockets in rails
 gem 'faye-rails'
+
+#Needed for datepicker
+group :assets do
+  gem 'jquery-ui-rails' # jquery ui
+end

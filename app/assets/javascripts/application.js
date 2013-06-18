@@ -11,5 +11,14 @@
 // GO AFTER THE REQUIRES BELOW.
 //
 //= require jquery
+//= require jquery-ui
+//= require jquery.ui.all
 //= require jquery_ujs
 //= require_tree .
+//= require websocket_rails/main
+//= require chat_event
+
+
+jQuery(function(){
+	jQuery('#meeting_startDate').datepicker({ dateFormat:$.datepicker.TIMESTAMP, mandatory: true });
+	});
