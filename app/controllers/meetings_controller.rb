@@ -112,8 +112,15 @@ class MeetingsController < ApplicationController
 
   def notify
     recipients = params[:email][:recipients]
-    EmailNotification.meeting_notification(recipients, Meeting.find(params[:id])).deliver
-    redirect_to Meeting.find(params[:id])
+    unless params[:meeting] == nil
+      meeting = Meeting.new
+      meeting.token = params[:meeting][:token]
+      EmailNotification.meeting_notification(recipients, meeting).deliver
+      redirect_to conference_url(meeting.token)
+    else
+      EmailNotification.meeting_notification(recipients, Meeting.find(params[:id])).deliver
+      redirect_to Meeting.find(params[:id])
+    end
   end
 
   private

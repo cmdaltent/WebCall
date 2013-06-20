@@ -31,7 +31,13 @@
               			</ul>
 
 					
-					<li><%= link_to 'Schedule Meeting', new_meeting_path %></li>
+					<li id="fat-menu" class="dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown">Schedule Meeting <b class="caret"></b></a>
+						<ul class="dropdown-menu">
+							<li><%= link_to 'Schedule Meeting', new_meeting_path %></li>
+							<li><%= link_to 'Ad-hoc Meeting', conference_url(SecureRandom.uuid) %></li>	
+						</ul>
+					</li>
 					
 					<li><%= link_to 'Account Information', current_user %></li>
 					
