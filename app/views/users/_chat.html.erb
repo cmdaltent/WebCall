@@ -16,13 +16,13 @@ $('#chat_room').hide();
 
 	<div class="form-inline well">
 		<fieldset>
-			<label class="control-label" for="input01">Type your message:</label>
+			<label class="control-label">Type your message:</label>
 			<input type="text" class="input-xlarge" id="message">
 			<button id="send" class="btn btn-primary">
 				Send
 			</button>
-			<button id="closed" class="btn btn-primary">
-				Close
+			<button id="toAll" class="btn btn-primary">
+				ToAll
 			</button>
 		</fieldset>
 	</div>
@@ -52,6 +52,9 @@ $('#chat_room').hide();
 <%= javascript_tag do %>
 jQuery(function() {
 window.chatController = new Chat.Controller("<%= request.host %>:<%= request.port %>/websocket",true);
-alert(windeow.chatController);})
+<!-- alert(window.chatController); -->
+})
+
+
 <% end %>
 </div>
