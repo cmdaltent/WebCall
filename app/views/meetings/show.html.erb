@@ -31,13 +31,13 @@
 	<%= conference_url(@meeting.token) %>
 </p>
 
-<p>
+<div class="input-append">
 	<b>Notify via e-mail:</b>
 	<%= form_tag notify_url(@meeting), :method => :post do %>
-		<%= text_field(:email, :recipients)%>
-		<%= submit_tag "Notify" %>
+		<%= text_field(:email, :recipients, :class => 'span2') %>
+		<%= submit_tag "Notify", :class => 'btn' %>
 	<% end %>
-</p>
+</div><br />
 
 <%= link_to 'Back', meetings_path, class: "btn" %>
 <%= link_to 'Edit', edit_meeting_path, class: "btn" %>
