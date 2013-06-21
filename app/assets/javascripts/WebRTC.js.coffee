@@ -62,18 +62,25 @@ class Channel
     
 @Channel = Channel
 
+class Participant
+  constructor: (@whoami) ->
+    @channel = new Channel ['meetings', meetingToken, @whoami.identifier].join '/'
+    @connection
 
 class WebRTC
-  constructor: (@meetingId, name = 'Guest ('+Utils.GUID().split('-')[0]+')', userToken = Utils.GUID())->
-    @connections = {}
+  constructor: (@meetingId, name = 'Guest ('+Utils.GUID().split('-')[0]+')', userToken = Utils.GUID()) ->
+    @participants = {}
     @localStream
-    @channel = new Channel '/meetings/' + @meetingId + '/stream-control'
+    @channel = new Channel ['meetings', @meetingId, 'stream-control'].join '/'
     @whoami =
       name: name
       identifier: userToken + '_' + @channel.getClientId()
       userToken: userToken
       clientId: @channel.getClientId()
     @channel.subscribe (message) =>
+      @processChannelMessages message
+    @privateChannel = new Channel ['meetings', @meetingId, @whoami.identifier].join '/'
+    @privateChannel.subscribe (message) =>
       @processChannelMessages message
     window.addEventListener 'beforeunload', () =>
       @_sayGoodBye()
@@ -92,54 +99,57 @@ class WebRTC
           @_offerReceived(message.participant, message.sessionDescription)
         when 'answer'
           console.log 'answer'
-          @connections[message.participant.identifier].setRemoteDescription new RTCSessionDescription message.sessionDescription
+          @participants[message.participant.identifier].connection.setRemoteDescription new RTCSessionDescription message.sessionDescription
         when 'candidate'
-          @connections[message.participant.identifier].addIceCandidate new RTCIceCandidate
+          @participants[message.participant.identifier].connection.addIceCandidate new RTCIceCandidate
             sdpMLineIndex: message.label,
             candidate: message.candidate
         when 'GoodBye!'
           @_handleGoodBye message.participant
     
   _createAndSendOffer: (participant) ->
-    connection = @connections[participant.identifier] = @_createConnection() 
+    @participants[participant.identifier] = new Participant(participant)
+    connection = @participants[participant.identifier].connection = @_createConnection(@participants[participant.identifier]) 
     connection.guid = participant.identifier
     if @localStream? then connection.addStream @localStream
     connection.createOffer (sessionDescription) =>
       sessionDescription.sdp = preferOpus sessionDescription.sdp 
       connection.setLocalDescription sessionDescription
-      @channel.publish
+      @participants[participant.identifier].channel.publish
         type: 'offer',
         participant: @whoami,
         sessionDescription: sessionDescription      
     
   _offerReceived: (participant, remoteSessionDescription) ->
-    connection = @connections[participant.identifier] = @_createConnection()
+    @participants[participant.identifier] = new Participant(participant)
+    connection = @participants[participant.identifier].connection = @_createConnection(@participants[participant.identifier])
     connection.guid = participant.identifier
     if @localStream? then connection.addStream @localStream
     connection.setRemoteDescription new RTCSessionDescription remoteSessionDescription
     connection.createAnswer (sessionDescription) =>
       connection.setLocalDescription sessionDescription
-      @channel.publish
+      @participants[participant.identifier].channel.publish
         type: 'answer',
         participant: @whoami,
         sessionDescription: sessionDescription
 
   _sayGoodBye: () ->
-    console.log 'client goodbye'
     @channel.publish
       participant: @whoami,
       type: 'GoodBye!'
-    for guid, connection of @connections
-      connection.close()
+    for guid, participant of @participants
+      participant.connection.close()
+      participant.channel.disconnect()
     @channel.disconnect()
     undefined
         
   _handleGoodBye: (participant) ->
-    @connections[participant.identifier].close()
+    @participants[participant.identifier].connection.close()
+    @participants[participant.identifier].channel.disconnect()
     @_onRemoteStreamRemoved participant.identifier
-    delete @connections[participant.identifier]
+    delete @participants[participant.identifier]
 
-  _createConnection: ->
+  _createConnection: (participant) ->
     connection = new RTCPeerConnection
       iceServers: [{
         url: 'stun:23.21.150.121'
@@ -154,7 +164,7 @@ class WebRTC
     
     connection.onicecandidate = (event) =>
       if event.candidate
-        @channel.publish {
+        participant.channel.publish {
           type: 'candidate',
           participant: @whoami,
           label: event.candidate.spdMLineIndex,
@@ -166,13 +176,13 @@ class WebRTC
       undefined
     
     connection.onaddstream = (event) =>
-      console.log '#onaddstream'
-      console.log event
+      EventBroker.fire 'rtc.user.join', participant
       @_onRemoteStreamAdded connection.guid, event.stream
 #      attachMediaStream $('#remote-stream')[0], event.stream
       
     connection.onremovestream = () =>
       console.log event
+      EventBroker.fire 'rtc.user.left', participant
       @_onRemoteStreamRemoved connection.guid
 #      attachMediaStream $('#remote-stream')[0], undefined
     
