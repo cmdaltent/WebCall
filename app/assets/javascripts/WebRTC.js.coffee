@@ -28,7 +28,8 @@ class Channel
   
   constructor: (@channel) ->
     if @channel[0] isnt '/'
-      throw Error('A channel needs to start with a "/"!')
+      @channel = '/' + @channel
+    @_listeners = []
     @constructor.Client.subscribe @channel, (data) => 
       @_onmessage data
     
@@ -38,7 +39,6 @@ class Channel
     @constructor.Client.publish @channel, data
     
   subscribe: (fn) ->
-    @_listeners = @_listeners or []
     @_listeners.push fn
     undefined
     
