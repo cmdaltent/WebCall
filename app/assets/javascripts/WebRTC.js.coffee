@@ -139,14 +139,12 @@ class WebRTC
       type: 'GoodBye!'
     for guid, participant of @participants
       participant.connection.close()
-      participant.channel.disconnect()
     @channel.disconnect()
     undefined
         
   _handleGoodBye: (participant) ->
     EventBroker.fire 'rtc.user.left', @participants[participant.identifier]
     @participants[participant.identifier].connection.close()
-    @participants[participant.identifier].channel.disconnect()
     @_onRemoteStreamRemoved participant.identifier
     delete @participants[participant.identifier]
 
