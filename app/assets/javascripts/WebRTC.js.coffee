@@ -144,6 +144,7 @@ class WebRTC
     undefined
         
   _handleGoodBye: (participant) ->
+    EventBroker.fire 'rtc.user.left', @participants[participant.identifier]
     @participants[participant.identifier].connection.close()
     @participants[participant.identifier].channel.disconnect()
     @_onRemoteStreamRemoved participant.identifier
@@ -182,7 +183,6 @@ class WebRTC
       
     connection.onremovestream = () =>
       console.log event
-      EventBroker.fire 'rtc.user.left', participant
       @_onRemoteStreamRemoved connection.guid
 #      attachMediaStream $('#remote-stream')[0], undefined
     
