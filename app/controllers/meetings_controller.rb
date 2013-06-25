@@ -112,8 +112,15 @@ class MeetingsController < ApplicationController
 
   def notify
     recipients = params[:email][:recipients]
-    EmailNotification.meeting_notification(recipients, Meeting.find(params[:id])).deliver
-    redirect_to Meeting.find(params[:id])
+    unless params[:meeting] == nil
+      meeting = Meeting.new
+      meeting.token = params[:meeting][:token]
+      EmailNotification.meeting_notification(recipients, meeting).deliver
+      redirect_to conference_url(meeting.token)
+    else
+      EmailNotification.meeting_notification(recipients, Meeting.find(params[:id])).deliver
+      redirect_to Meeting.find(params[:id])
+    end
   end
 
   private
@@ -138,7 +145,7 @@ class MeetingsController < ApplicationController
     DateTime.current.to_i
   end
 
-  def private_meetings_currentUser(meetings)
+  def private_meetings_current_user(meetings)
     tmp_meetings = Array.new
     meetings.each {|meeting|
       if meeting.user.token == current_user.token

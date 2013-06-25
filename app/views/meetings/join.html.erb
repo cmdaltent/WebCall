@@ -1,3 +1,11 @@
+<% unless @meeting
+	@meeting = Meeting.new
+	@meeting.id = -1
+	@meeting.token = params['token']
+	@meeting.title = 'Ad-hoc Meeting'
+end
+%>
+
 <script type="text/javascript">
   var meetingToken =  "<%= @meeting.token %>";
   var userToken = <%= current_user ? "\"".html_safe+current_user.token+"\"".html_safe : "null" %>;
@@ -8,8 +16,8 @@
 <div class="container">
 	<div class="row">
 		<div class="span8" id="streams">
-			<video autoplay="autoplay" id="my-stream" class="span4 stream my-stream"/>
-			<video autoplay="autoplay" id="remote-stream-tmp" class="span4 stream remote-stream"/>
+			<video autoplay="autoplay" id="my-stream" class="span3 stream my-stream"/>
+			<video autoplay="autoplay" id="remote-stream-tmp" class="span3 stream remote-stream"/>
 		</div>
 
 		<!--chat box start-->
@@ -31,36 +39,26 @@
 				<div class="accordion-heading">
 					<a class="accordion-toggle" data-toggle="collapse" data-parent="#controlBox" href="#participant-list"> Participants </a>
 				</div>
-				<div id="participant-list" class="accordion-body collapse" style="height: 0px; ">
+				<div id="participant-list" class="accordion-body collapse in">
 					<div class="accordion-inner">
-  					<div class="participant-list-user me" style="padding: 0px 0px 0px 20px">
+  					<div class="participant-list-user me">
   						<span class="user-name"><%= current_user ? current_user.username : "Me" %></span>
   					</div>
 					</div>
-				</div>
-			</div>
-
-			<div class="row">
-				<div id=hand class="span3" style="padding: 8px 15px" onclick="test()">
-					Raise Hand
 				</div>
 			</div>
 		</div>
 	</div>
 	<!--chat box end-->
 </div>
-<%= link_to 'Back', meetings_path %>
-<!--Original Code-->
-<!--
-
-<div class="container">
-<div class="row">
-<div class="span12"><video id="my-stream" autoplay="autoplay" width="100%" height="100%"></video></div>
-</div>
-<div class="row">
-<div class="span2" id="remote-streams-bar"></div>
-</div>
-</div>
-
-<%= link_to 'Back', meetings_path %>
--->
+<% if @meeting.id == -1 %>
+<div class="input-append">
+	<b>Notify via e-mail:</b>
+	<%= form_tag notify_url(@meeting), :method => :post do %>
+		<%= hidden_field(:meeting, :token)%>
+		<%= text_field(:email, :recipients, :class => 'span2') %>
+		<%= submit_tag "Invite others", :class => 'btn' %>
+	<% end %>
+</div><br />
+<% end %>
+<%= link_to 'Back', meetings_path, :class => 'btn' %>
