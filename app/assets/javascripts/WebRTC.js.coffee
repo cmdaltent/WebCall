@@ -13,7 +13,7 @@ instance variable - it's a class variable.
 ### 
 
 
-class Utils
+class @Utils
   S4 = ()->
       (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1)
   
@@ -28,7 +28,8 @@ class Channel
   
   constructor: (@channel) ->
     if @channel[0] isnt '/'
-      throw Error('A channel needs to start with a "/"!')
+      @channel = '/' + @channel
+    @_listeners = []
     @constructor.Client.subscribe @channel, (data) => 
       @_onmessage data
     
@@ -38,7 +39,6 @@ class Channel
     @constructor.Client.publish @channel, data
     
   subscribe: (fn) ->
-    @_listeners = @_listeners or []
     @_listeners.push fn
     undefined
     
@@ -49,6 +49,9 @@ class Channel
     
   disconnect: () ->
     @constructor.Client.disconnect()
+  
+  getClientId: () ->
+    __ClientID__
 
   _onmessage: (data) ->
     unless data['__SENDER__'] is __ClientID__
@@ -59,14 +62,25 @@ class Channel
     
 @Channel = Channel
 
+class Participant
+  constructor: (@whoami) ->
+    @channel = new Channel ['meetings', meetingToken, @whoami.identifier].join '/'
+    @connection
 
 class WebRTC
-  
-  constructor: (@meetingId, @whoami = {name: '', token: Utils.GUID()})->
-    @connections = {}
+  constructor: (@meetingId, name = 'Guest ('+Utils.GUID().split('-')[0]+')', userToken = Utils.GUID()) ->
+    @participants = {}
     @localStream
-    @channel = new Channel '/meetings/' + @meetingId + '/stream-control'
+    @channel = new Channel ['meetings', @meetingId, 'stream-control'].join '/'
+    @whoami =
+      name: name
+      identifier: userToken + '_' + @channel.getClientId()
+      userToken: userToken
+      clientId: @channel.getClientId()
     @channel.subscribe (message) =>
+      @processChannelMessages message
+    @privateChannel = new Channel ['meetings', @meetingId, @whoami.identifier].join '/'
+    @privateChannel.subscribe (message) =>
       @processChannelMessages message
     window.addEventListener 'beforeunload', () =>
       @_sayGoodBye()
@@ -85,55 +99,62 @@ class WebRTC
           @_offerReceived(message.participant, message.sessionDescription)
         when 'answer'
           console.log 'answer'
-          @connections[message.participant.token].setRemoteDescription new RTCSessionDescription message.sessionDescription
+          @participants[message.participant.identifier].connection.setRemoteDescription new RTCSessionDescription message.sessionDescription
         when 'candidate'
-          @connections[message.participant.token].addIceCandidate new RTCIceCandidate
+          @participants[message.participant.identifier].connection.addIceCandidate new RTCIceCandidate
             sdpMLineIndex: message.label,
             candidate: message.candidate
         when 'GoodBye!'
           @_handleGoodBye message.participant
     
   _createAndSendOffer: (participant) ->
-    connection = @connections[participant.token] = @_createConnection() 
-    connection.guid = participant.token
+    @participants[participant.identifier] = new Participant(participant)
+    connection = @participants[participant.identifier].connection = @_createConnection(@participants[participant.identifier]) 
+    connection.guid = participant.identifier
     if @localStream? then connection.addStream @localStream
     connection.createOffer (sessionDescription) =>
+      sessionDescription.sdp = preferOpus sessionDescription.sdp 
       connection.setLocalDescription sessionDescription
-      @channel.publish
+      @participants[participant.identifier].channel.publish
         type: 'offer',
         participant: @whoami,
         sessionDescription: sessionDescription      
     
   _offerReceived: (participant, remoteSessionDescription) ->
-    connection = @connections[participant.token] = @_createConnection()
-    connection.guid = participant.token
+    @participants[participant.identifier] = new Participant(participant)
+    connection = @participants[participant.identifier].connection = @_createConnection(@participants[participant.identifier])
+    connection.guid = participant.identifier
     if @localStream? then connection.addStream @localStream
     connection.setRemoteDescription new RTCSessionDescription remoteSessionDescription
     connection.createAnswer (sessionDescription) =>
       connection.setLocalDescription sessionDescription
-      @channel.publish
+      @participants[participant.identifier].channel.publish
         type: 'answer',
         participant: @whoami,
         sessionDescription: sessionDescription
 
   _sayGoodBye: () ->
-    console.log 'client goodbye'
     @channel.publish
       participant: @whoami,
       type: 'GoodBye!'
-    for guid, connection of @connections
-      connection.close()
+    for guid, participant of @participants
+      participant.connection.close()
     @channel.disconnect()
     undefined
         
   _handleGoodBye: (participant) ->
-    @connections[participant.token].close()
-    delete @connections[participant.token]
+    EventBroker.fire 'rtc.user.left', @participants[participant.identifier]
+    @participants[participant.identifier].connection.close()
+    @_onRemoteStreamRemoved participant.identifier
+    delete @participants[participant.identifier]
 
-  _createConnection: ->
+  _createConnection: (participant) ->
     connection = new RTCPeerConnection
       iceServers: [{
         url: 'stun:23.21.150.121'
+      }, {
+        url: 'turn:tudwebcall@webcall.markus-wutzler.de',
+        credential: 'tudwebcall',
       }]
     
     #connection.onstatechange = () =>
@@ -142,7 +163,7 @@ class WebRTC
     
     connection.onicecandidate = (event) =>
       if event.candidate
-        @channel.publish {
+        participant.channel.publish {
           type: 'candidate',
           participant: @whoami,
           label: event.candidate.spdMLineIndex,
@@ -154,26 +175,25 @@ class WebRTC
       undefined
     
     connection.onaddstream = (event) =>
-      console.log '#onaddstream'
-      console.log event
+      EventBroker.fire 'rtc.user.join', participant
       @_onRemoteStreamAdded connection.guid, event.stream
 #      attachMediaStream $('#remote-stream')[0], event.stream
       
     connection.onremovestream = () =>
       console.log event
-      @_onRemoteStreamAdded connection.guid
+      @_onRemoteStreamRemoved connection.guid
 #      attachMediaStream $('#remote-stream')[0], undefined
     
     return connection
     
-  getUserMedia: ->
+  getUserMedia: (video = true, audio = true)->
     navigator.getUserMedia {
-      audio: true,
-      video: true,
+      audio: audio,
+      video: video,
     }, (stream) => 
       @_onUserMediaSuccess stream
     , (e) => 
-      @_onUserMediaError e
+      @_onUserMediaError e, video, audio
   
   _onUserMediaSuccess: (stream) ->
     @localStream = stream
@@ -183,15 +203,16 @@ class WebRTC
       participant: @whoami
     undefined
     
-  _onUserMediaError: (error) ->
+  _onUserMediaError: (error, video, audio) ->
+    if error.code is 2 and video is true
+      console.error "No Video available"
+      @getUserMedia(false)
     console.error error
 
   _onRemoteStreamAdded: (guid, stream) ->
-    el = (document.createElement('video'))
-    el.id = guid
-    attachMediaStream el, stream
-    $(el).attr 'autoplay', 'autoplay'
-    $('#remote-streams-bar').append $ el
+    el = $('#remote-stream-tmp').clone().attr('id',guid)
+    attachMediaStream el[0], stream
+    $('#streams').append($(el))
     undefined
 
   _onRemoteStreamRemoved: (guid) ->
@@ -202,10 +223,10 @@ class WebRTC
 
 $(->
   try 
-    window.meeting = new WebRTC(meetingId)
-    window.meeting.getUserMedia()
+    window.meeting = new WebRTC(meetingToken, userName, userToken)
   catch error
-    console.log error
+    console.log(error)
   finally
+    window.meeting?.getUserMedia()
     undefined  
 )

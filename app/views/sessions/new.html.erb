@@ -1,0 +1,27 @@
+<% provide(:title, "Sign in") %>
+
+<div class="row">
+<div class="container-fluid">
+			<div class="row">
+				<div class="span5">
+					<img src="images/meeting.jpg">
+				</div>
+    			<div class="span5 offset1">
+    <%= form_for(:session, url: sessions_path) do |f| %>
+
+      <%= f.label :email %>
+      <%= f.text_field :email %>
+
+      <%= f.label :password %>
+      <%= f.password_field :password %>
+      <br class="bar" />
+ 	<%= f.submit "Sign in", class: "btn btn-large btn-primary" %>
+    <% end %>
+
+    <p>New user? <%= link_to "Sign up now!", signup_path %></p>
+				</div>
+			</div>
+		</div>
+
+
+</div>

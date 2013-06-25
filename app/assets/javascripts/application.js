@@ -10,6 +10,16 @@
 // WARNING: THE FIRST BLANK LINE MARKS THE END OF WHAT'S TO BE PROCESSED, ANY BLANK LINE SHOULD
 // GO AFTER THE REQUIRES BELOW.
 //
+//= require EventBroker
 //= require jquery
+//= require jquery-ui
+//= require jquery.ui.all
 //= require jquery_ujs
 //= require_tree .
+//= require websocket_rails/main
+//= require chat_event
+
+
+jQuery(function(){
+	jQuery('#meeting_startDate').datepicker({ dateFormat:$.datepicker.TIMESTAMP, mandatory: true });
+	});

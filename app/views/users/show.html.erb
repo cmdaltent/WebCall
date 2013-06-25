@@ -1,13 +1,21 @@
-<p id="notice"><%= notice %></p>
+<h3>Account Information</h3>
+<div class="container-fluid">
+<div class="span5 offset3">
+<% provide(:title, "Personal info") %>
 
 <p>
-  <b>Firstname:</b>
-  <%= @user.firstName %>
+  <b>First name:</b>
+  <%= @user.first_name %>
 </p>
 
 <p>
-  <b>Lastname:</b>
-  <%= @user.lastName %>
+  <b>Last name:</b>
+  <%= @user.last_name %>
+</p>
+
+<p>
+  <b>E mail:</b>
+  <%= @user.email %>
 </p>
 
 <p>
@@ -16,15 +24,12 @@
 </p>
 
 <p>
-  <b>Password:</b>
-  <%= @user.password %>
-</p>
-
-<p>
-  <b>Email:</b>
-  <%= @user.email %>
+  <b>Token:</b>
+  <%= @user.token %>
 </p>
 
 
-<%= link_to 'Edit', edit_user_path(@user) %> |
-<%= link_to 'Back', users_path %>
+<%= link_to 'Edit', edit_user_path(@user), class: "btn" %>
+
+</div>
+</div>

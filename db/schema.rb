@@ -11,30 +11,33 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130506191504) do
+ActiveRecord::Schema.define(:version => 20130613133433) do
 
   create_table "meetings", :force => true do |t|
-    t.integer  "startDate"
-    t.integer  "expectedDuration"
     t.string   "title"
+    t.datetime "startDate"
+    t.integer  "expectedDuration"
     t.string   "description"
+    t.boolean  "private"
+    t.string   "token"
+    t.integer  "user_id"
     t.datetime "created_at",       :null => false
     t.datetime "updated_at",       :null => false
   end
 
-  create_table "meetings_users", :id => false, :force => true do |t|
-    t.integer "meeting_id"
-    t.integer "user_id"
-  end
+  add_index "meetings", ["user_id"], :name => "index_meetings_on_user_id"
 
   create_table "users", :force => true do |t|
-    t.string   "firstName"
-    t.string   "lastName"
-    t.string   "username"
-    t.string   "password"
+    t.string   "first_name"
+    t.string   "last_name"
     t.string   "email"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.string   "username"
+    t.string   "token"
+    t.string   "password_digest"
+    t.datetime "created_at",      :null => false
+    t.datetime "updated_at",      :null => false
   end
+
+  add_index "users", ["token"], :name => "index_users_on_token"
 
 end

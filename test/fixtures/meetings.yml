@@ -1,15 +1,15 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
 
 one:
-  startDate: 1
-  expectedDuration: 1
   title: MyString
+  startDate: 
+  expectedDuration: 
   description: MyString
-  isParticipating: false
+  private: false
 
 two:
-  startDate: 1
-  expectedDuration: 1
   title: MyString
+  startDate: 
+  expectedDuration: 
   description: MyString
-  isParticipating: false
+  private: false

@@ -1,14 +1,35 @@
+require 'uri'
+
 class MeetingsController < ApplicationController
-  #before_filter :performAuthentication
-  
+
+  before_filter :authenticated_user, only: [:index,:new]
+  before_filter :authorized_users, only:[:index,:show,:edit,:update,:destroy]
   # GET /meetings
   # GET /meetings.json
   def index
-    @meetings = Meeting.all
+    current_time = get_current_time_since_unix
+    defaults = {:onlyUpcoming => "true", :meOrganizing => "false", :maxCount => Meeting.all.length, :fromDate => current_time, :privateOnly => "false"}
+    defaults.merge!(params.symbolize_keys)
 
+    if defaults[:onlyUpcoming].to_s == "true" && defaults[:fromDate].to_i > current_time
+      current_time = defaults[:fromDate].to_i
+    end
+    if defaults[:onlyUpcoming].to_s == "false"
+      if defaults[:fromDate].to_i != current_time
+        current_time = defaults[:fromDate].to_i
+      else
+      current_time = 0
+      end
+    end
+
+    @meetings = Meeting.where("private = :private AND startDate >= :start",
+      {:private => defaults[:privateOnly].to_s.to_bool, :start => current_time}).limit(defaults[:maxCount].to_i)
+    if defaults[:privateOnly].to_s.to_bool
+      @meetings = private_meetings_current_user(@meetings)
+    end
     respond_to do |format|
       format.html # index.html.erb
-      format.json { render json: @meetings }
+      format.json { render json: {:status => "200 OK", :count => @meetings.length, :results => @meetings} }
     end
   end
 
@@ -19,7 +40,7 @@ class MeetingsController < ApplicationController
 
     respond_to do |format|
       format.html # show.html.erb
-      format.json { render json: @meeting }
+      format.json { render json: {:status => "200 OK", :result => @meeting} }
     end
   end
 
@@ -27,7 +48,6 @@ class MeetingsController < ApplicationController
   # GET /meetings/new.json
   def new
     @meeting = Meeting.new
-
     respond_to do |format|
       format.html # new.html.erb
       format.json { render json: @meeting }
@@ -42,8 +62,7 @@ class MeetingsController < ApplicationController
   # POST /meetings
   # POST /meetings.json
   def create
-    @meeting = Meeting.new(params[:meeting])
-
+    @meeting = current_user.meetings.build(params[:meeting])
     respond_to do |format|
       if @meeting.save
         format.html { redirect_to @meeting, notice: 'Meeting was successfully created.' }
@@ -74,7 +93,7 @@ class MeetingsController < ApplicationController
   # DELETE /meetings/1
   # DELETE /meetings/1.json
   def destroy
-    @meeting = Meeting.find(params[:id])
+    @meeting = Meeting.find(params(:id))
     @meeting.destroy
 
     respond_to do |format|
@@ -83,20 +102,56 @@ class MeetingsController < ApplicationController
     end
   end
 
-  private
+  def join
+    @meeting = Meeting.where("token = ?", params[:token]).last
 
-  def performAuthentication
-    authenticate
+    respond_to do |format|
+      format.html # join.html.erb
+    end
   end
 
-  def authenticate
-    authenticate_or_request_with_http_basic do |username, password|
-      username = User.all(:conditions => {:username => username}).first
-      if username
-        username.password == password
-      else
-        false;
+  def notify
+    recipients = params[:email][:recipients]
+    unless params[:meeting] == nil
+      meeting = Meeting.new
+      meeting.token = params[:meeting][:token]
+      EmailNotification.meeting_notification(recipients, meeting).deliver
+      redirect_to conference_url(meeting.token)
+    else
+      EmailNotification.meeting_notification(recipients, Meeting.find(params[:id])).deliver
+      redirect_to Meeting.find(params[:id])
+    end
+  end
+
+  private
+
+  def authorized_meeting
+    if !params[:id].nil?
+      meeting = Meeting.find(params[:id])
+      redirect_to meetings_path unless meeting.private
+    end
+  end
+
+  def authorized_users
+    if !params[:id].nil?
+      if Meeting.find(params[:id]).private == true
+        user = current_user.meetings.find_by_id(params[:id])
+        redirect_to meetings_path, notice: "No premission" unless !user.nil?
       end
     end
+  end
+
+  def get_current_time_since_unix
+    DateTime.current.to_i
+  end
+
+  def private_meetings_current_user(meetings)
+    tmp_meetings = Array.new
+    meetings.each {|meeting|
+      if meeting.user.token == current_user.token
+      tmp_meetings.push(meeting)
+      end
+    }
+    return tmp_meetings
   end
 end

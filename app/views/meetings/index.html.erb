@@ -1,30 +1,54 @@
-<h2>Upcoming events<small><%= link_to 'New Meeting', new_meeting_path, :class => 'btn pull-right' %></small></h2>
+<% provide(:title,"Meeting List") %>
 
-<table class="table table-striped">
-<thead>
-  <tr>
-    <th>Title</th>
-    <th>Description</th>
-    <th>Start</th>
-    <th>Expected Duration</th>
-    <th></th>
-    <th></th>
-    <th></th>
-  </tr>
-</thead>
-<tbody>
+<h4>Listing meetings</h4>
+
+<div class="container">
+	<div class="row-fluid">
+		<div class="span2">
+			<h6>Title</h6>
+		</div>
+		<div class="span2">
+			<h6>Description</h6>
+		</div>
+		<div class="span2">
+			<h6>Start Time</h6>
+		</div>
+		<div class="span2">
+			<h6>Expected Duration</h6>
+		</div>
+		
+	</div>
+
+
+
+
+
+
+
+
+
 <% @meetings.each do |meeting| %>
-  <tr>
-    <td><%= meeting.title %></td>
-    <td><%= meeting.description %></td>
-    <td><%= meeting.startDate %></td>
-    <td><%= meeting.expectedDuration %></td>
-    <td><%= link_to 'Join', meeting, :class => 'btn btn-primary' %></td>
-    <td><%= link_to 'Edit', edit_meeting_path(meeting), :class => 'btn' %></td>
-    <td><%= link_to 'Destroy', meeting, method: :delete, data: { confirm: 'Are you sure?' }, :class => 'btn btn-delete' %></td>
-  </tr>
+	
+		<div class="row-fluid">
+			<div class="span2">
+				<%= link_to meeting.title, conference_url(meeting.token) %>
+			</div>
+			<div class="span2">
+				<%= meeting.description %>
+			</div>
+			<div class="span2">
+				<%= meeting.startDate %></div>
+			<div class="span2">
+				<%= meeting.expectedDuration %></div>
+			<div class="span1">
+				<%= link_to 'Show', meeting, class: "btn"  %></div>
+			<div class="span1">
+				<%= link_to 'Join', conference_url(meeting.token), class: "btn" %></div> 
+			</div>
 <% end %>
-</tbody>
-</table>
+		</div>
+
 
 <br />
+
+<!-- <%= link_to 'New Meeting', new_meeting_path %> -->

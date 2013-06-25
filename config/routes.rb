@@ -1,12 +1,19 @@
 WebCall::Application.routes.draw do
   
-  root :to => 'meetings#index'
+  
+  root :to => 'sessions#new'
 
   resources :users
+  resources :sessions, only: [:new, :create, :destroy]
+  
+  resources :meetings, only: [:new, :edit, :update,:index,:show,:destroy,:create]
+  
+  match '/signin', to: 'sessions#new'
+  match '/signup', to: 'users#new'
+  match '/signout', to: 'sessions#destroy', via: :delete
 
-
-  resources :meetings
-
+  match 'meetings/conferences/:token', to: 'meetings#join', as: :conference
+  match 'meetings/:id/notify', to: 'meetings#notify', as: :notify
 
   # Initializes WebSocket
   faye_server '/streaming', :timeout => 25

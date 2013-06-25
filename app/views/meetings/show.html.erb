@@ -1,14 +1,44 @@
-<script type="text/javascript">var meetingId = <%= @meeting.id %>;</script>
-<h2><%= @meeting.title %></h2>
+<% @emails = String.new %>
+<p id="notice"><%= notice %></p>
 
-<div class="container">
-	<div class="row">
-		<div class="span12"><video id="my-stream" autoplay="autoplay" width="100%" height="100%"></video></div>
-	</div>
-	<div class="row">
-		<div class="span2" id="remote-streams-bar"></div>
-	</div>
-</div>
+<p>
+  <b>Title:</b>
+  <%= @meeting.title %>
+</p>
 
-<%= link_to 'Edit', edit_meeting_path(@meeting) %> |
-<%= link_to 'Back', meetings_path %>
+<p>
+  <b>Startdate:</b>
+  <%= @meeting.startDate %>
+</p>
+
+<p>
+  <b>Expectedduration:</b>
+  <%= @meeting.expectedDuration %>
+</p>
+
+<p>
+  <b>Description:</b>
+  <%= @meeting.description %>
+</p>
+
+<p>
+  <b>Private:</b>
+  <%= @meeting.private %>
+</p>
+
+<p>
+	<b>Meeting-URL:</b>
+	<%= conference_url(@meeting.token) %>
+</p>
+
+<div class="input-append">
+	<b>Notify via e-mail:</b>
+	<%= form_tag notify_url(@meeting), :method => :post do %>
+		<%= text_field(:email, :recipients, :class => 'span2') %>
+		<%= submit_tag "Notify", :class => 'btn' %>
+	<% end %>
+</div><br />
+
+<%= link_to 'Back', meetings_path, class: "btn" %>
+<%= link_to 'Edit', edit_meeting_path, class: "btn" %>
+<%= link_to 'Delete Meeting', @meeting, method: :delete, data: { confirm: 'Are you sure?' },  class: "btn" %>
